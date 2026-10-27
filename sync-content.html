@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sync DA Content</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 100%;
+      padding: 40px;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 30px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 6px;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    .hint {
+      font-size: 12px;
+      color: #999;
+      margin-top: 4px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .status {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      display: none;
+    }
+    .status.success {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+      display: block;
+    }
+    .status.error {
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+      display: block;
+    }
+    .status.loading {
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+      display: block;
+    }
+    .spinner {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 2px solid #1e40af;
+      border-top: 2px solid transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-right: 6px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Sync DA Content</h1>
+    <p class="subtitle">Copy the Adobe Target credentials sheet to your repo</p>
+
+    <form id="syncForm">
+      <div class="form-group">
+        <label for="targetOrg">Target Organization</label>
+        <input
+          type="text"
+          id="targetOrg"
+          name="targetOrg"
+          placeholder="e.g., my-company-org"
+          required
+        >
+        <div class="hint">Your GitHub organization name</div>
+      </div>
+
+      <div class="form-group">
+        <label for="targetRepo">Target Repository</label>
+        <input
+          type="text"
+          id="targetRepo"
+          name="targetRepo"
+          placeholder="e.g., my-demo-site"
+          required
+        >
+        <div class="hint">Your DA site repository name</div>
+      </div>
+
+      <div class="form-group">
+        <label for="syncMode">What to Sync</label>
+        <select id="syncMode" name="syncMode">
+          <option value="config">Full Config (library, apps, prepare, data)</option>
+          <option value="sheet">Single Sheet...</option>
+        </select>
+        <div class="hint">Sync all default config or specific sheets</div>
+      </div>
+
+      <div class="form-group" id="sheetGroup" style="display: none;">
+        <label for="sheetPath">Sheet to Sync</label>
+        <select id="sheetPath" name="sheetPath">
+          <option value=".da/adobe-target.json">Adobe Target Credentials (.da/adobe-target.json)</option>
+          <option value=".da/adobe-workfront.json">Adobe Workfront Config (.da/adobe-workfront.json)</option>
+          <option value="metadata.json">Metadata (metadata.json)</option>
+          <option value="custom">Custom Path...</option>
+        </select>
+        <div class="hint">Select which sheet to copy</div>
+      </div>
+
+      <div class="form-group" id="customPathGroup" style="display: none;">
+        <label for="customPath">Custom Sheet Path</label>
+        <input
+          type="text"
+          id="customPath"
+          name="customPath"
+          placeholder="e.g., .da/my-custom-sheet.json"
+        >
+      </div>
+
+      <button type="submit" id="syncBtn">Sync Content</button>
+
+      <div id="status" class="status"></div>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('syncForm');
+    const statusDiv = document.getElementById('status');
+    const syncModeSelect = document.getElementById('syncMode');
+    const sheetGroup = document.getElementById('sheetGroup');
+    const sheetPathSelect = document.getElementById('sheetPath');
+    const customPathGroup = document.getElementById('customPathGroup');
+    const syncBtn = document.getElementById('syncBtn');
+
+    // Toggle sheet selection based on sync mode
+    syncModeSelect.addEventListener('change', () => {
+      sheetGroup.style.display = syncModeSelect.value === 'sheet' ? 'block' : 'none';
+    });
+
+    // Toggle custom path input
+    sheetPathSelect.addEventListener('change', () => {
+      customPathGroup.style.display = sheetPathSelect.value === 'custom' ? 'block' : 'none';
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const targetOrg = document.getElementById('targetOrg').value.trim();
+      const targetRepo = document.getElementById('targetRepo').value.trim();
+      const syncMode = syncModeSelect.value;
+
+      if (!targetOrg || !targetRepo) {
+        showStatus('Please fill in all fields', 'error');
+        return;
+      }
+
+      if (syncMode === 'config') {
+        await syncConfig(targetOrg, targetRepo);
+      } else {
+        let sheetPath = sheetPathSelect.value;
+
+        if (sheetPath === 'custom') {
+          sheetPath = document.getElementById('customPath').value.trim();
+          if (!sheetPath) {
+            showStatus('Please enter a custom sheet path', 'error');
+            return;
+          }
+        }
+
+        await syncSheet(targetOrg, targetRepo, sheetPath);
+      }
+    });
+
+    async function syncConfig(org, repo) {
+      syncBtn.disabled = true;
+      showStatus('Syncing full config (library, apps, prepare, data)...', 'loading');
+
+      try {
+        const actionUrl = `/actions/sync-config?targetOrg=${encodeURIComponent(org)}&targetRepo=${encodeURIComponent(repo)}`;
+
+        const resp = await fetch(actionUrl, {
+          method: 'GET',
+          headers: { Accept: 'application/json' },
+        });
+
+        const data = await resp.json();
+
+        if (!resp.ok) {
+          throw new Error(data.error || `HTTP ${resp.status}`);
+        }
+
+        showStatus(`✓ Config synced! ${data.sheets.synced.length} sheet(s) to ${org}/${repo}`, 'success');
+        form.reset();
+      } catch (err) {
+        showStatus(`✗ Error: ${err.message}`, 'error');
+      } finally {
+        syncBtn.disabled = false;
+      }
+    }
+
+    async function syncSheet(org, repo, path) {
+      syncBtn.disabled = true;
+      showStatus('Syncing sheet...', 'loading');
+
+      try {
+        const actionUrl = `/actions/sync-da-sheet?targetOrg=${encodeURIComponent(org)}&targetRepo=${encodeURIComponent(repo)}&sheetPath=${encodeURIComponent(path)}`;
+
+        const resp = await fetch(actionUrl, {
+          method: 'GET',
+          headers: { Accept: 'application/json' },
+        });
+
+        const data = await resp.json();
+
+        if (!resp.ok) {
+          throw new Error(data.error || `HTTP ${resp.status}`);
+        }
+
+        showStatus(`✓ Successfully synced ${path} to ${org}/${repo}`, 'success');
+        form.reset();
+      } catch (err) {
+        showStatus(`✗ Error: ${err.message}`, 'error');
+      } finally {
+        syncBtn.disabled = false;
+      }
+    }
+
+    function showStatus(message, type) {
+      statusDiv.className = `status ${type}`;
+      if (type === 'loading') {
+        statusDiv.innerHTML = `<span class="spinner"></span>${message}`;
+      } else {
+        statusDiv.innerHTML = message;
+      }
+    }
+  </script>
+</body>
+</html>

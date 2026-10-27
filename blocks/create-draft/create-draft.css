@@ -1,0 +1,478 @@
+.create-draft {
+  --cd-navy: #00095b;
+  --cd-blue: #4a6fc0;
+  --cd-step: #3f5da8;
+
+  color: var(--cd-navy);
+  font-size: 14px;
+}
+
+.create-draft h2 {
+  margin: 20px 0 8px;
+  font-family: var(--body-font-family);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-color);
+}
+
+/* stepper */
+.create-draft .cd-stepper {
+  display: flex;
+  justify-content: center;
+  gap: 54px;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.create-draft .cd-stepper li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  background: #fff;
+  font-size: 12px;
+}
+
+.create-draft .cd-stepper li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 100%;
+  width: 54px;
+  height: 1px;
+  background: #ddd;
+}
+
+.create-draft .cd-stepper li.active {
+  border-color: var(--cd-step);
+  background: var(--cd-step);
+  color: #fff;
+  font-weight: 700;
+}
+
+/* cards and fields */
+.create-draft .cd-card {
+  box-sizing: border-box;
+  margin-bottom: 12px;
+  border-radius: 2px;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+}
+
+.create-draft .cd-narrow {
+  max-width: 320px;
+}
+
+.create-draft .cd-card.cd-narrow {
+  max-width: none;
+}
+
+.create-draft .cd-card.cd-narrow > .cd-field,
+.create-draft .cd-card.cd-narrow > .cd-checks {
+  max-width: 320px;
+}
+
+.create-draft .cd-field {
+  margin-bottom: 14px;
+}
+
+.create-draft .cd-label {
+  display: block;
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+}
+
+.create-draft .cd-req {
+  margin-right: 2px;
+  color: #b00020;
+}
+
+.create-draft .cd-info {
+  color: #4a6fc0;
+  cursor: help;
+}
+
+.create-draft .cd-input {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  padding: 7px 10px;
+  background: #fff;
+  color: var(--cd-navy);
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.create-draft .cd-input:focus {
+  border-color: var(--cd-step);
+  outline: 0;
+  box-shadow: 0 0 0 1px var(--cd-step);
+}
+
+.create-draft .cd-input.cd-readonly {
+  border-color: #eee;
+  background: #f4f4f4;
+  color: #555;
+}
+
+.create-draft .cd-date {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+}
+
+.create-draft .cd-date .cd-input {
+  flex: 1 1 200px;
+}
+
+.create-draft .cd-link {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--cd-blue);
+  font-size: 11px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.create-draft .cd-link.cd-add {
+  display: block;
+  margin: 12px 0;
+  color: var(--cd-navy);
+  font-size: 13px;
+}
+
+.create-draft .cd-rule {
+  margin: 24px 0;
+  border: 0;
+  border-top: 1px solid #e5e5e5;
+}
+
+.create-draft .cd-radio,
+.create-draft .cd-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 14px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #555;
+}
+
+.create-draft .cd-radio {
+  display: flex;
+  margin: 6px 0;
+}
+
+.create-draft .cd-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 4px;
+}
+
+.create-draft .cd-error {
+  min-height: 0;
+  margin: 3px 0 0;
+  color: #b00020;
+  font-size: 12px;
+}
+
+.create-draft .cd-invalid .cd-input,
+.create-draft .cd-invalid .cd-editor {
+  border-color: #b00020;
+}
+
+/* role picker */
+.create-draft .cd-picker {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 12px;
+  max-width: 840px;
+  margin: 16px 0;
+}
+
+.create-draft .cd-col {
+  min-height: 210px;
+  border: 1px solid #e5e5e5;
+  border-radius: 2px;
+  padding: 8px;
+}
+
+.create-draft .cd-col-title {
+  margin: 0 0 8px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 6px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.create-draft .cd-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 150px;
+  max-height: 210px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.create-draft .cd-item {
+  border: 1px solid #e5e5e5;
+  border-radius: 2px;
+  padding: 7px 10px;
+  background: #fafafa;
+  cursor: grab;
+}
+
+.create-draft .cd-item::before {
+  content: '\2261  ';
+  color: #888;
+}
+
+.create-draft .cd-item:focus-visible {
+  outline: 2px solid var(--cd-step);
+}
+
+/* rich text */
+.create-draft .cd-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  border: 1px solid #e5e5e5;
+  border-bottom: 0;
+  background: #fafafa;
+}
+
+.create-draft .cd-tool {
+  min-width: 26px;
+  margin: 0;
+  border: 0;
+  border-radius: 2px;
+  padding: 3px 6px;
+  background: none;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.create-draft .cd-tool:hover {
+  background: #e8e8e8;
+}
+
+.create-draft .cd-tool-bold {
+  font-weight: 700;
+}
+
+.create-draft .cd-tool-italic {
+  font-style: italic;
+}
+
+.create-draft .cd-tool-strikeThrough {
+  text-decoration: line-through;
+}
+
+.create-draft .cd-color {
+  width: 26px;
+  height: 22px;
+  margin: 0 2px;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.create-draft .cd-sep {
+  width: 1px;
+  height: 18px;
+  margin: 0 6px;
+  background: #ddd;
+}
+
+.create-draft .cd-editor {
+  min-height: 160px;
+  border: 1px solid #e5e5e5;
+  padding: 10px;
+  background: #fff;
+  color: #222;
+  line-height: 1.45;
+}
+
+.create-draft .cd-editor:focus {
+  border-color: var(--cd-step);
+  outline: 0;
+}
+
+.create-draft .cd-editor table,
+.create-draft .cd-pcontent table {
+  border-collapse: collapse;
+}
+
+.create-draft .cd-editor td,
+.create-draft .cd-pcontent td {
+  min-width: 60px;
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+}
+
+.create-draft .cd-extra {
+  margin: 14px 0;
+}
+
+.create-draft .cd-extra .cd-input {
+  max-width: 320px;
+  margin-right: 12px;
+}
+
+/* attachments */
+.create-draft .cd-attach-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.create-draft .cd-muted {
+  color: #777;
+  font-size: 12px;
+}
+
+.create-draft .cd-file {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+/* buttons */
+.create-draft .cd-nav {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.create-draft .cd-btn {
+  display: inline-block;
+  margin: 0;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  padding: 8px 18px;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.create-draft .cd-btn-blue {
+  background: var(--cd-blue);
+  color: #fff;
+}
+
+.create-draft .cd-btn-blue:hover {
+  background: #3c5fb0;
+  color: #fff;
+}
+
+.create-draft .cd-btn-text {
+  color: #333;
+}
+
+.create-draft .cd-btn-navy {
+  background: var(--cd-navy);
+  color: #fff;
+}
+
+.create-draft .cd-btn-outline {
+  border-color: #b9c6e8;
+  background: #f4f7fd;
+  color: var(--cd-blue);
+}
+
+/* preview */
+.create-draft .cd-preview {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) minmax(0, 1.4fr);
+  gap: 12px;
+  align-items: start;
+}
+
+@media (width < 700px) {
+  .create-draft .cd-preview,
+  .create-draft .cd-picker {
+    grid-template-columns: 1fr;
+  }
+}
+
+.create-draft .cd-pfield {
+  margin-bottom: 14px;
+}
+
+.create-draft .cd-pfield p {
+  margin: 0;
+}
+
+.create-draft .cd-plabel {
+  font-weight: 700;
+}
+
+.create-draft .cd-pbody h1 {
+  margin: 0 0 14px;
+  text-transform: none;
+  font-family: var(--body-font-family);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--cd-navy);
+}
+
+.create-draft .cd-psection h3 {
+  margin: 12px 0 2px;
+  font-family: var(--body-font-family);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--cd-navy);
+}
+
+.create-draft .cd-pcontent {
+  margin-left: 6px;
+  line-height: 1.45;
+}
+
+.create-draft .cd-pcontent p {
+  margin: 0 0 8px;
+}
+
+.create-draft .cd-dotted {
+  margin: 12px 0;
+  border: 0;
+  border-top: 1px dotted #333;
+}
+
+.create-draft .cd-done h2 {
+  margin-top: 0;
+}
+
+.create-draft .cd-edit-banner {
+  margin: 0 0 16px;
+  border-left: 4px solid #00095b;
+  padding: 8px 12px;
+  background: #eef0f8;
+  color: #00095b;
+  font-size: 14px;
+}

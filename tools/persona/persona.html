@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Persona</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/tools/persona/persona.css">
+    <script src="/tools/persona/persona.js" type="module"></script>
+  </head>
+  <body>
+    <div class="persona-app">
+      <div class="persona-label">Persona</div>
+
+      <select class="persona-select" id="persona-select"></select>
+
+      <div class="persona-controls">
+        <label class="persona-toggle">
+          <input type="checkbox" id="persona-loggedin">
+          <span class="persona-toggle-track" aria-hidden="true"></span>
+          <span class="persona-toggle-text">Logged in</span>
+        </label>
+        <select class="persona-select persona-region-select" id="persona-region" aria-label="Region"></select>
+        <div class="persona-actions">
+          <button type="button" class="persona-apply" id="persona-apply">Apply</button>
+          <button type="button" class="persona-reset" id="persona-reset">Reset</button>
+        </div>
+      </div>
+
+      <h2 class="persona-name" id="persona-name"></h2>
+      <p class="persona-description" id="persona-description"></p>
+
+      <div class="persona-section-label">Top Interests</div>
+      <div class="persona-interests" id="persona-interests"></div>
+
+      <div class="persona-section-label">Intent Map</div>
+      <div class="persona-radar-wrap">
+        <svg class="persona-radar" id="persona-radar" viewBox="0 0 260 260"></svg>
+      </div>
+
+      <p class="persona-summary" id="persona-summary"></p>
+
+      <div class="persona-metrics" id="persona-metrics"></div>
+      <div class="persona-trajectory" id="persona-trajectory"></div>
+    </div>
+  </body>
+</html>

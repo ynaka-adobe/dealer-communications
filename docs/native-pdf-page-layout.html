@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" href="layout.css" type="text/css" />
+  <link rel="stylesheet" href="content.css" type="text/css" />
+  <title>Common Page Layout</title>
+</head>
+<body data-layout="page">
+
+  <!-- header: logo on the left, site name beside it, a navy rule underneath -->
+  <div data-region="header">
+    <table style="width: 100%; border-collapse: collapse; border-bottom: 2px solid #0a1a5c;">
+      <tr>
+        <td style="width: 150px; padding: 0 0 8px 0; vertical-align: middle;">
+          <img src="logo.svg" alt="Dealer Communications" width="137" height="49" />
+        </td>
+        <td style="padding: 0 0 8px 12px; vertical-align: middle; font-family: Poppins, Helvetica, Arial, sans-serif; font-size: 22px; font-weight: normal; color: #4d4d4d;">
+          Dealer Communications
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- the communication's content flows here -->
+  <div data-region="content"></div>
+
+  <!-- footer: a light rule, the mark, copyright and the demo notice, all centred -->
+  <div data-region="footer">
+    <div style="text-align: center; border-top: 1px solid #c9cde0; padding-top: 8px; font-family: Poppins, Helvetica, Arial, sans-serif;">
+      <img src="img.svg" alt="" width="24" height="24" style="vertical-align: middle;" />
+      <span style="color: #0a1a5c; font-size: 12px; vertical-align: middle;">Copyright © 2026 Dealer Communications All rights reserved.</span>
+      <p style="margin: 4px 0 0 0; font-size: 11px; color: #555555;">This is a fictitious company created for demonstration purposes.</p>
+    </div>
+  </div>
+
+</body>
+</html>

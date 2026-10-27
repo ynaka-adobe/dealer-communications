@@ -1,0 +1,369 @@
+.communications {
+  --comm-navy: #00095b;
+  --comm-header: #9b9b9b;
+
+  font-size: 14px;
+}
+
+.communications .communications-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.communications .communications-button {
+  display: inline-block;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.communications span.communications-info {
+  color: #555;
+  cursor: help;
+}
+
+.communications button.communications-button,
+.communications a.communications-button {
+  margin: 0;
+  border: 0;
+  border-radius: 2px;
+  padding: 8px 14px;
+  background-color: var(--comm-navy);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.communications button.communications-button:hover,
+.communications a.communications-button:hover,
+.communications button.communications-button:focus-visible,
+.communications a.communications-button:focus-visible {
+  background-color: #1a2480;
+}
+
+.communications .communications-scroll {
+  overflow-x: auto;
+}
+
+.communications table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 14px;
+}
+
+.communications thead th {
+  background: var(--comm-header);
+  color: #fff;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 700;
+  vertical-align: top;
+}
+
+.communications thead tr.communications-filters th {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.communications thead tr:first-child th {
+  padding-bottom: 8px;
+}
+
+.communications button.communications-sort {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.communications thead input,
+.communications thead select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 120px;
+  margin: 0;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  padding: 6px 8px;
+  background: #fff;
+  font-size: 13px;
+}
+
+.communications tbody td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+.communications td.communications-date {
+  white-space: nowrap;
+}
+
+.communications td.communications-empty {
+  text-align: center;
+  color: #666;
+}
+
+.communications td.communications-actions {
+  position: relative;
+  text-align: center;
+}
+
+.communications button.communications-kebab {
+  margin: 0;
+  border: 0;
+  padding: 4px 8px;
+  background: none;
+  color: var(--text-color);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.communications ul.communications-menu {
+  position: fixed;
+  z-index: 10;
+  min-width: 130px;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: var(--comm-navy);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+  text-align: left;
+}
+
+.communications ul.communications-menu button {
+  display: block;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 8px 10px;
+  background: none;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.communications ul.communications-menu button:hover,
+.communications ul.communications-menu button:focus-visible {
+  background: #4a69b0;
+  outline: 0;
+}
+
+.communications .communications-pager {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 20px;
+}
+
+.communications .communications-pager button {
+  min-width: 30px;
+  margin: 0;
+  border: 0;
+  border-radius: 2px;
+  padding: 6px 10px;
+  background: #aaa;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.communications .communications-pager button.current {
+  background: var(--comm-navy);
+}
+
+.communications .communications-pager button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* announcement dialog (opened by Create Draft) */
+dialog.announcement {
+  width: min(560px, calc(100vw - 32px));
+  margin: 12vh auto auto;
+  border: 0;
+  border-radius: 3px;
+  padding: 0;
+  color: #333;
+  font-size: 14px;
+  box-shadow: 0 8px 28px rgb(0 0 0 / 30%);
+}
+
+dialog.announcement::backdrop {
+  background: rgb(0 0 0 / 40%);
+}
+
+dialog.announcement .announcement-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: #00095b;
+  color: #fff;
+}
+
+dialog.announcement h2 {
+  margin: 0;
+  font-family: var(--body-font-family);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+
+dialog.announcement button {
+  margin: 0;
+  border: 0;
+  cursor: pointer;
+}
+
+dialog.announcement .announcement-x {
+  background: none;
+  color: #fff;
+  font-size: 16px;
+}
+
+dialog.announcement .announcement-body {
+  padding: 14px 16px 6px;
+}
+
+dialog.announcement .announcement-body p {
+  margin: 0 0 12px;
+}
+
+dialog.announcement .announcement-body a:any-link {
+  color: #00095b;
+  text-decoration: underline;
+}
+
+dialog.announcement .announcement-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid #eee;
+  padding: 12px 16px;
+}
+
+dialog.announcement .announcement-cancel {
+  background: none;
+  color: #00095b;
+  font-size: 13px;
+}
+
+dialog.announcement .announcement-create {
+  border-radius: 2px;
+  padding: 8px 18px;
+  background: #4a6fc0;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.communications p.communications-error {
+  margin: 24px 0;
+  padding: 16px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+  color: #00095b;
+}
+
+/* status pills */
+.communications .communications-status {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 2px 10px;
+  background: #e6e8ee;
+  color: #2b2f3a;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.communications .communications-status.status-draft { background: #e6e8ee; color: #2b2f3a; }
+.communications .communications-status.status-reviewer-pending { background: #fff1c2; color: #6b4a00; }
+.communications .communications-status.status-final-approval-pending { background: #d9e6ff; color: #0b2f78; }
+.communications .communications-status.status-approved { background: #d6f2de; color: #0d5a26; }
+.communications .communications-status.status-published { background: #0d5a26; color: #fff; }
+.communications .communications-status.status-unpublish { background: #f6d9d9; color: #7a1414; }
+
+/* review messages */
+.review-toasts {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 30;
+  display: grid;
+  gap: 8px;
+  max-width: min(420px, calc(100vw - 32px));
+}
+
+.review-toast {
+  margin: 0;
+  border-radius: 4px;
+  padding: 10px 14px;
+  background: #00095b;
+  color: #fff;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+}
+
+.review-toast.review-toast-error { background: #9c1c1c; }
+
+.communications .communications-status.status-generating-pdf { background: #e5dcff; color: #3b1a8a; }
+
+.communications .communications-status.status-pdf-error { background: #f6d9d9; color: #7a1414; cursor: help; }
+
+/* the header band: breadcrumb left, actions right */
+.communications .communications-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  margin: 0 0 16px;
+}
+
+.communications .communications-bar .breadcrumb,
+.communications .communications-bar .communications-toolbar {
+  margin: 0;
+}
+
+.communications .communications-status.status-archived { background: #e4e7ef; color: #3d4560; }
+
+/* an action in progress: the row dims, with a spinner where the menu button was */
+.communications tr.communications-busy { opacity: 0.55; pointer-events: none; }
+
+.review-spinner {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  border: 2px solid currentcolor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  vertical-align: -3px;
+  animation: review-spin 0.8s linear infinite;
+}
+
+.communications td.communications-actions .review-spinner { margin: 0; color: #00095b; }
+
+.review-toast.review-toast-progress { background: #00095b; }
+
+@keyframes review-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) { .review-spinner { animation-duration: 3s; } }
+
+/* the analytics tab sits bottom right: messages stack above it */
+body:has(.insights-toggle) .review-toasts { bottom: 72px; }

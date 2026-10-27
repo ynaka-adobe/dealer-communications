@@ -1,0 +1,139 @@
+.communication-preview {
+  --comm-navy: #00095b;
+
+  color: var(--comm-navy);
+  font-size: 14px;
+}
+
+.communication-preview .communication-preview-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr);
+  gap: 12px;
+  align-items: start;
+}
+
+@media (width < 700px) {
+  .communication-preview .communication-preview-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.communication-preview aside,
+.communication-preview article {
+  box-sizing: border-box;
+  border-radius: 2px;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+}
+
+.communication-preview p {
+  margin: 0;
+}
+
+.communication-preview .communication-preview-field {
+  margin-bottom: 18px;
+}
+
+.communication-preview .communication-preview-label {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.communication-preview .communication-preview-value {
+  margin-top: 4px;
+}
+
+.communication-preview article h1 {
+  margin: 0 0 16px;
+  text-transform: none;
+  font-family: var(--body-font-family);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--comm-navy);
+}
+
+.communication-preview article h2 {
+  margin: 16px 0 6px;
+  font-family: var(--body-font-family);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--comm-navy);
+}
+
+.communication-preview article p {
+  margin: 0 0 12px 12px;
+  line-height: 1.45;
+}
+
+.communication-preview article ul {
+  margin: 0 0 12px;
+  padding-left: 40px;
+  line-height: 1.45;
+}
+
+.communication-preview button.communication-preview-close {
+  margin: 12px 0 0;
+  border: 0;
+  border-radius: 2px;
+  padding: 8px 18px;
+  background: var(--comm-navy);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.communication-preview button.communication-preview-close:hover,
+.communication-preview button.communication-preview-close:focus-visible {
+  background: #1a2480;
+}
+
+/* every action looks the same: outlined, equal height, navy */
+.communication-preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+.communication-preview .communication-preview-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 38px;
+  margin: 0;
+  border: 1px solid var(--comm-navy, #00095b);
+  border-radius: 2px;
+  padding: 0 16px;
+  background: #fff;
+  color: var(--comm-navy, #00095b);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.communication-preview .communication-preview-button:hover,
+.communication-preview .communication-preview-button:focus-visible {
+  background: var(--comm-navy, #00095b);
+  color: #fff;
+}
+
+.communication-preview-pdf {
+  display: block;
+  width: 100%;
+
+  /* Fit the screen: the page header, the title and buttons above the viewer, and the Close
+     button below it take about 280px, so the Close button stays above the fold. */
+  height: max(320px, calc(100vh - var(--header-height, 64px) - 280px));
+  height: max(320px, calc(100dvh - var(--header-height, 64px) - 280px));
+  border: 1px solid #ccc;
+}
+

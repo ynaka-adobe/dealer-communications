@@ -1,0 +1,34 @@
+{
+  "project": "DA Block Collection",
+  "editUrlLabel": "Document Authoring",
+  "editUrlPattern": "https://da.live/edit#/{{org}}/{{site}}{{pathname}}",
+  "plugins": [
+    {
+      "id": "aem-genai-variations",
+      "titleI18n": {
+        "en": "Generate with AI"
+      },
+      "environments": ["preview"],
+      "includePaths": ["**.docx**"],
+      "event": "aem-genai-variations-sidekick"
+    },
+    {
+      "id": "target",
+      "title": "Target",
+      "url": "https://experience.adobe.com/#/@acsmarketing/target/activities/activityLibrary",
+      "passConfig": true,
+      "environments": ["preview", "live", "edit"],
+      "includePaths": ["**"]
+    },
+    {
+      "id": "persona",
+      "title": "Persona",
+      "url": "/tools/persona/persona.html",
+      "isPalette": true,
+      "passReferrer": true,
+      "paletteRect": "top: 40px; right: 0; width: 400px; height: calc(100% - 40px);",
+      "environments": ["preview", "live", "edit", "prod"],
+      "includePaths": ["**"]
+    }
+  ]
+}

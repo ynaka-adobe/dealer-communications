@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Communications stub harness</title>
+  <meta name="communications-api" content="/api/fmc">
+  <meta name="communications-poll" content="5">
+  <meta name="communications-data" content="/data">
+  <meta name="communications-draft-save" content="true">
+  <link rel="stylesheet" href="/styles/styles.css">
+  <link rel="stylesheet" href="/blocks/communications/communications.css">
+  <link rel="stylesheet" href="/blocks/create-draft/create-draft.css">
+</head>
+<body style="display:block">
+  <main>
+    <div class="section"><div>
+      <p>Remote mode against the local stub. Create a draft, then watch its status change in the list below (refreshes every 5 seconds here).</p>
+      <div class="create-draft" id="cd"></div>
+      <h2>Communications</h2>
+      <div class="communications" id="cm"></div>
+    </div></div>
+  </main>
+  <script type="module">
+    import cd from '/blocks/create-draft/create-draft.js';
+    import cm from '/blocks/communications/communications.js';
+    cd(document.getElementById('cd'));
+    cm(document.getElementById('cm'));
+  </script>
+</body>
+</html>

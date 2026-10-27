@@ -1,0 +1,256 @@
+:root {
+  --persona-bg: #141414;
+  --persona-accent: #ff5722;
+  --persona-text: #f2f2f2;
+  --persona-muted: #a0a0a0;
+  --persona-track: #3a3a3a;
+  --persona-border: #2c2c2c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background-color: var(--persona-bg);
+  color: var(--persona-text);
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+.persona-app {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.persona-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--persona-accent);
+}
+
+.persona-select {
+  width: 100%;
+  padding: 10px 12px;
+  background-color: #1e1e1e;
+  color: var(--persona-text);
+  border: 1px solid var(--persona-border);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.persona-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.persona-description {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--persona-muted);
+}
+
+.persona-section-label {
+  margin-top: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--persona-accent);
+}
+
+.persona-interests {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.persona-interest {
+  display: grid;
+  grid-template-columns: 1fr 3fr auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.persona-interest-label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.persona-interest-track {
+  height: 4px;
+  border-radius: 2px;
+  background-color: var(--persona-track);
+  overflow: hidden;
+}
+
+.persona-interest-fill {
+  height: 100%;
+  background-color: var(--persona-accent);
+}
+
+.persona-interest-value {
+  color: var(--persona-muted);
+  font-size: 11px;
+}
+
+.persona-radar-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+.persona-radar {
+  width: 100%;
+  max-width: 260px;
+}
+
+.persona-radar-grid {
+  fill: none;
+  stroke: var(--persona-border);
+  stroke-width: 1;
+}
+
+.persona-radar-axis {
+  stroke: var(--persona-border);
+  stroke-width: 1;
+}
+
+.persona-radar-shape {
+  fill: color-mix(in srgb, var(--persona-accent) 35%, transparent);
+  stroke: var(--persona-accent);
+  stroke-width: 2;
+}
+
+.persona-radar-label {
+  fill: var(--persona-muted);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.persona-summary {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.persona-metrics {
+  font-size: 11px;
+  color: var(--persona-muted);
+}
+
+.persona-trajectory {
+  display: inline-block;
+  padding: 6px 10px;
+  border: 1px solid var(--persona-border);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--persona-muted);
+}
+
+/* persona simulation controls (logged-in toggle + region) */
+.persona-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 10px 0 4px;
+}
+
+.persona-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 13px;
+}
+
+.persona-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.persona-toggle-track {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  border-radius: 11px;
+  background: #c7c7c7;
+  transition: background 0.15s ease;
+  flex: 0 0 auto;
+}
+
+.persona-toggle-track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s ease;
+}
+
+.persona-toggle input:checked + .persona-toggle-track {
+  background: #0072ce;
+}
+
+.persona-toggle input:checked + .persona-toggle-track::after {
+  transform: translateX(16px);
+}
+
+.persona-region-select {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 120px;
+  margin: 0;
+}
+
+.persona-actions {
+  margin-left: auto;
+  display: inline-flex;
+  gap: 8px;
+}
+
+.persona-apply,
+.persona-reset {
+  border: 1px solid #c7c7c7;
+  background: #fff;
+  color: #444;
+  font: inherit;
+  font-size: 12px;
+  padding: 5px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.persona-apply {
+  border-color: #0072ce;
+  background: #0072ce;
+  color: #fff;
+  font-weight: 600;
+}
+
+.persona-apply:hover {
+  background: #005bb0;
+  border-color: #005bb0;
+}
+
+.persona-reset:hover {
+  background: #f5f5f5;
+  color: #000;
+}

@@ -1,0 +1,76 @@
+<meta
+  http-equiv="Content-Security-Policy"
+  content="script-src 'nonce-aem' 'strict-dynamic' 'unsafe-inline' http: https:; base-uri 'self'; object-src 'none';"
+  move-to-http-header="true"
+>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<!-- Target: set content="1" on pages that should use Target; vendor-at.js is at.js 2.11.8 -->
+<!-- <meta name="target" content="1"/> -->
+<meta name="target-at-js" content="/deps/at/vendor-at.js"/>
+<!-- Optional: override Target edge server domain -->
+<!-- <meta name="target-server-domain" content="your.target.edge.hostname"/> -->
+<!-- Optional: legacy getOffer/applyOffer for a hero mbox (selector must exist in DOM) -->
+<!-- <meta name="target-mbox-hero" content="eds-hero-mbox"/> -->
+<!-- <meta name="target-mbox-hero-selector" content=".hero.block .hero-inner"/> -->
+<script nonce="aem">
+  /* Persona demo profile: capture URL params (p, li, region), persist them,
+     expose to at.js via targetPageParams, and show a demo badge.
+     Personas: 1 Technical Evaluator, 2 Business Decision Maker,
+     3 Procurement Manager, 4 Industry Researcher. */
+  (function () {
+    try {
+      var q = new URLSearchParams(location.search);
+      var cur = {};
+      try { cur = JSON.parse(localStorage.getItem('demoProfile') || '{}'); } catch (e) { cur = {}; }
+      var p = q.get('p'); if (p === null) p = q.get('persona');
+      if (p !== null && p !== '') cur.persona = parseInt(p, 10);
+      var li = q.get('li'); if (li === null) li = q.get('loggedin');
+      if (li !== null) cur.loggedIn = (li === '1' || li === 'true');
+      var r = q.get('region'); if (r === null) r = q.get('r');
+      if (r) cur.region = r.toUpperCase();
+      try { localStorage.setItem('demoProfile', JSON.stringify(cur)); } catch (e) { /* noop */ }
+      document.cookie = 'demoProfile=' + encodeURIComponent(JSON.stringify(cur)) + ';path=/;max-age=2592000;SameSite=Lax';
+      window.demoProfile = cur;
+      window.adobeDataLayer = window.adobeDataLayer || [];
+      window.adobeDataLayer.push({ demo: cur });
+
+      /* at.js: write persona/loggedIn/region into the Target profile so audiences persist */
+      window.targetPageParams = function () {
+        var d = window.demoProfile || {};
+        var out = {};
+        if (d.persona !== undefined) out['profile.persona'] = d.persona;
+        if (d.loggedIn !== undefined) out['profile.loggedIn'] = d.loggedIn;
+        if (d.region !== undefined) out['profile.region'] = d.region;
+        return out;
+      };
+
+      /* demo badge (dismissible) */
+      var NAMES = { 1: 'Technical Evaluator', 2: 'Business Decision Maker', 3: 'Procurement Manager', 4: 'Industry Researcher' };
+      document.addEventListener('DOMContentLoaded', function () {
+        var d = window.demoProfile || {};
+        if (!d.persona) return;
+        var el = document.createElement('div');
+        el.setAttribute('data-persona-badge', '');
+        el.style.cssText = 'position:fixed;left:16px;bottom:16px;z-index:9999;background:#1a1a1a;color:#fff;font:13px/1.3 system-ui,sans-serif;padding:8px 12px;border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center';
+        var txt = document.createElement('span');
+        txt.textContent = 'Persona ' + d.persona + ': ' + (NAMES[d.persona] || '?')
+          + ' · ' + (d.loggedIn ? 'logged in' : 'guest')
+          + (d.region ? (' · ' + d.region) : '');
+        var btn = document.createElement('button');
+        btn.textContent = '×';
+        btn.setAttribute('aria-label', 'Dismiss persona badge');
+        btn.style.cssText = 'background:none;border:0;color:#fff;font-size:16px;line-height:1;cursor:pointer;padding:0';
+        btn.addEventListener('click', function () { el.remove(); });
+        el.appendChild(txt);
+        el.appendChild(btn);
+        document.body.appendChild(el);
+      });
+    } catch (e) { /* noop */ }
+  })();
+</script>
+<script nonce="aem" src="/scripts/aem.js" type="module"></script>
+<script nonce="aem" src="/scripts/scripts.js" type="module"></script>
+<link rel="stylesheet" href="/styles/styles.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Poppins:wght@400;500&display=swap"/>

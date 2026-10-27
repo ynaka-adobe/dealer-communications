@@ -1,0 +1,17 @@
+.hlx/*
+coverage/*
+logs/*
+node_modules/*
+
+helix-importer-ui
+.DS_Store
+*.bak
+.idea
+tools/target/config.json
+
+# App Builder / secrets — never commit
+.env
+.env.*
+.aio
+dist/
+.claude/

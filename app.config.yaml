@@ -1,0 +1,42 @@
+application:
+  actions: actions
+  runtimeManifest:
+    packages:
+      da-demo-kit:
+        license: Apache-2.0
+        actions:
+          sync-config:
+            function: actions/sync-config/index.js
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              ADMIN_API_KEY: $ADMIN_API_KEY
+              IMS_CLIENT_ID: $IMS_CLIENT_ID
+              IMS_CLIENT_SECRET: $IMS_CLIENT_SECRET
+              IMS_SCOPES: $IMS_SCOPES
+            annotations:
+              require-adobe-auth: false
+              final: true
+          sync-da-sheet:
+            function: actions/sync-da-sheet/index.js
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              ADMIN_API_KEY: $ADMIN_API_KEY
+              IMS_CLIENT_ID: $IMS_CLIENT_ID
+              IMS_CLIENT_SECRET: $IMS_CLIENT_SECRET
+              IMS_SCOPES: $IMS_SCOPES
+            annotations:
+              require-adobe-auth: false
+              final: true
+          publish:
+            function: actions/publish/index.js
+            web: 'yes'
+            runtime: nodejs:20
+            inputs:
+              IMS_CLIENT_ID: $IMS_CLIENT_ID
+              IMS_CLIENT_SECRET: $IMS_CLIENT_SECRET
+              IMS_SCOPES: $IMS_SCOPES
+            annotations:
+              require-adobe-auth: false
+              final: true

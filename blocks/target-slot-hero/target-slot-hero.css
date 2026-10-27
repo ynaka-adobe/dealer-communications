@@ -1,0 +1,3 @@
+/* Persona hero slot — filled client-side by target-slot-hero.js (Adobe Target).
+   Hidden until an offer is rendered so there's no empty gap before it loads. */
+.target-slot-hero:empty { display: none; }

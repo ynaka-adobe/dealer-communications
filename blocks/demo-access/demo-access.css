@@ -1,0 +1,86 @@
+.demo-access {
+  max-width: 480px;
+  margin: 40px auto;
+  color: #00095b;
+  font-size: 14px;
+}
+
+.demo-access .demo-access-intro h1 {
+  margin: 0 0 8px;
+  font-family: var(--body-font-family);
+  font-size: 22px;
+  text-transform: none;
+  color: #00095b;
+}
+
+.demo-access .demo-access-intro p {
+  margin: 0 0 16px;
+  color: #555;
+}
+
+.demo-access .demo-access-panel {
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 12%);
+}
+
+.demo-access label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+}
+
+.demo-access .demo-access-row {
+  display: flex;
+  gap: 8px;
+}
+
+.demo-access input[type='text'] {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  padding: 8px 10px;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.demo-access input[aria-invalid='true'] {
+  border-color: #b00020;
+}
+
+.demo-access button[type='submit'] {
+  margin: 0;
+  border: 0;
+  border-radius: 2px;
+  padding: 8px 18px;
+  background: #00095b;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.demo-access button[type='submit']:hover {
+  background: #1a2480;
+}
+
+.demo-access .demo-access-error {
+  margin: 8px 0 0;
+  color: #b00020;
+  font-size: 12px;
+}
+
+.demo-access .demo-access-employee {
+  margin: 16px 0 0;
+  font-size: 13px;
+  color: #555;
+}
+
+.demo-access .demo-access-employee a:any-link {
+  color: #00095b;
+  text-decoration: underline;
+}
