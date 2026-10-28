@@ -7,3 +7,6 @@ package-lock.json
 test/*
 ue/models/*
 tools/communications-stub/*
+
+# App Builder service (deployed separately, not served by Edge Delivery)
+service/*

@@ -1,0 +1,89 @@
+# Dealer Communications service: Adobe App Builder / I/O Runtime configuration.
+# `aio app deploy` publishes these actions. Inputs arrive as action PARAMETERS; set the values in .env.
+application:
+  runtimeManifest:
+    packages:
+      dealer-communications:
+        license: Apache-2.0
+        actions:
+          # --- Dealer Communications service -------------------------------
+          # Called only by the site's edge function (shared-secret header). Reads the
+          # AEM host/credential from state key config:aem.
+          communications:
+            function: actions/communications/index.js
+            web: raw
+            runtime: nodejs:18
+            limits:
+              timeout: 60000
+            inputs:
+              DC_ACTION_SECRET: $DC_ACTION_SECRET
+              # demo code that unlocks the site's review actions (unset: they are off), and the AEM
+              # publish host the Guides PDFs are fetched from
+              DC_REVIEW_CODE: $DC_REVIEW_CODE
+              # which Guides output preset makes the PDF (its output name); empty = the local `pdf` preset
+              DC_PDF_OUTPUT: $DC_PDF_OUTPUT
+              # extra parameters the Native PDF preset needs, e.g. nodejs=true&templatePath=/content/dam/...
+              DC_PDF_PARAMS: $DC_PDF_PARAMS
+              DC_PUBLISH_HOST: $DC_PUBLISH_HOST
+              # DA write + publish for the communications sheets (optional: without them, saving
+              # draft steps answers 503 and the site keeps the draft in the page)
+              DA_CLIENT_ID: $DA_CLIENT_ID
+              DA_CLIENT_SECRET: $DA_CLIENT_SECRET
+              DA_SCOPES: $DA_SCOPES
+              DA_PUBLISH_KEY: $DA_PUBLISH_KEY
+              DA_TOKEN: $DA_TOKEN
+            annotations:
+              final: true
+
+          # Keeps the communications sheets in step with AEM: runs on an alarm trigger (README)
+          # and by hand. Not a web action, so it is not reachable from the internet.
+          reconcile:
+            function: actions/reconcile/index.js
+            web: 'no'
+            runtime: nodejs:18
+            limits:
+              timeout: 120000
+            inputs:
+              DA_CLIENT_ID: $DA_CLIENT_ID
+              DA_CLIENT_SECRET: $DA_CLIENT_SECRET
+              DA_SCOPES: $DA_SCOPES
+              DA_PUBLISH_KEY: $DA_PUBLISH_KEY
+              DA_TOKEN: $DA_TOKEN
+            annotations:
+              final: true
+          # Finishes PDF generation for approved communications: runs on a one-minute alarm trigger
+          # (README). Reads the finished PDF from Author, hosts it on the site and approves.
+          pdf-poll:
+            function: actions/pdf-poll/index.js
+            web: 'no'
+            runtime: nodejs:18
+            limits:
+              timeout: 120000
+            inputs:
+              DA_CLIENT_ID: $DA_CLIENT_ID
+              DA_CLIENT_SECRET: $DA_CLIENT_SECRET
+              DA_SCOPES: $DA_SCOPES
+              DA_PUBLISH_KEY: $DA_PUBLISH_KEY
+              DA_TOKEN: $DA_TOKEN
+            annotations:
+              final: true
+          # Operator operations (set a communication's status, sync one, reconcile): invoke with
+          # `aio rt action invoke`. Not a web action.
+          admin:
+            function: actions/admin/index.js
+            web: 'no'
+            runtime: nodejs:18
+            limits:
+              timeout: 120000
+            inputs:
+              DC_PDF_OUTPUT: $DC_PDF_OUTPUT
+              # extra parameters the Native PDF preset needs, e.g. nodejs=true&templatePath=/content/dam/...
+              DC_PDF_PARAMS: $DC_PDF_PARAMS
+              DA_CLIENT_ID: $DA_CLIENT_ID
+              DA_CLIENT_SECRET: $DA_CLIENT_SECRET
+              DA_SCOPES: $DA_SCOPES
+              DA_PUBLISH_KEY: $DA_PUBLISH_KEY
+              DA_TOKEN: $DA_TOKEN
+            annotations:
+              final: true
+

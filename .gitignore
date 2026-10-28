@@ -15,3 +15,14 @@ tools/target/config.json
 .aio
 dist/
 .claude/
+
+# secrets and local config (never commit)
+.env
+.aio
+service/.env
+service/.aio
+service/node_modules/
+service/dist/
+*OAuth*Server-to-Server*.json
+service-credentials.json
+.aws.credentials.json

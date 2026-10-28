@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+# dealer — shortcuts for the Dealer Communications admin operations.
+#   bin/dealer list                       drafts in both sheets (id, status, title)
+#   bin/dealer status <id> <STATUS>       set a status in AEM and sync the sheet
+#   bin/dealer approve <id> [pdf-url]     host the Guides PDF, set APPROVED, move to the archive
+#                                      (without a url: tries <id>_Native PDF, <id>-ditamap, then <title-slug>_Native PDF in .../pdfs/)
+#   bin/dealer sync <id>                  copy one communication's AEM state into the sheets
+#   bin/dealer reconcile                  repair any drift between AEM and the sheets
+#   bin/dealer map <id>                   create the DITA map for a communication submitted without one
+#   bin/dealer sidebar <id>               add the PDF details column to a record made before it existed
+#   bin/dealer sidebar-all                the same for every record made on the site
+#   bin/dealer reset-map <id>             put a record's map back to the generated one (old version kept)
+#   bin/dealer setup-guides               upload the dealer/field DITAVAL filters (once)
+#   bin/dealer delete <id>                delete a site-made draft: AEM folder, sheet rows, saved draft, hosted PDF
+#   bin/dealer generate <id>              start the Guides PDF workflow now (what Approve does on the site)
+#   bin/dealer poll                       check generating PDFs and finish any that are ready
+#   bin/dealer seed                       create 15 demo communications in varied states (about 3 minutes)
+#   bin/dealer pdfs                       latest PDFs under the communications folder in AEM
+# Statuses: DRAFT, "REVIEWER PENDING", "FINAL APPROVAL PENDING", APPROVED, PUBLISHED, UNPUBLISH
+set -euo pipefail
+cd "$(dirname "$0")/.."
+export PATH="$HOME/.nvm/versions/node/v20.19.6/bin:$PATH"
+LIVE="https://main--dealer-communications--ynaka-adobe.aem.live"
+PUBLISH="https://publish-p154856-e1944736.adobeaemcloud.com"
+ACTION="dealer-communications/admin"
+
+admin() { aio rt action invoke "$ACTION" -b -r "$@" 2>&1 | grep -v "update available\|npm install"; }
+sheet() { curl -s --compressed "$LIVE/data/$1.json?nc=$RANDOM" -H 'cache-control: no-cache'; }
+
+rows() {
+  for s in notifications archive; do
+    sheet "$s" | python3 -c "
+import sys, json
+for x in json.load(sys.stdin)['data']:
+    if x['id'].startswith('DRAFT'):
+        print('%-12s %-26s %-24s %s' % ('$s', x['id'], x['status'], x['title']))"
+  done
+}
+
+# the title of an id, from the sheets (used to guess the PDF name)
+title_of() {
+  { sheet notifications; sheet archive; } | python3 -c "
+import sys, json
+dec = json.JSONDecoder(); s = sys.stdin.read(); i = 0
+while i < len(s):
+    d, n = dec.raw_decode(s, i); i = n
+    for x in d['data']:
+        if x['id'] == '$1': print(x['title']); sys.exit()"
+}
+
+slug() { python3 -c "import re,sys; print(re.sub(r'[^a-z0-9]+','-',sys.argv[1].lower()).strip('-'))" "$1"; }
+
+need() { [ -n "${2:-}" ] || { echo "usage: bin/dealer $1" >&2; exit 2; }; }
+
+case "${1:-help}" in
+  list) rows ;;
+  status) need "status <id> <STATUS>" "${3:-}"; admin -p op set-status -p id "$2" -p status "$3" ;;
+  approve)
+    need "approve <id> [pdf-url]" "${2:-}"
+    url="${3:-}"
+    if [ -z "$url" ]; then
+      # map-based output is named after the draft id; older topic-based output after the title
+      base="$PUBLISH/content/dam/fmdita-outputs/pdfs"
+      url=""
+      for cand in "$base/$2_Native%20PDF.pdf" "$base/$2-ditamap.pdf"; do
+        [ "$(curl -s -o /dev/null -w '%{http_code}' -L -I "$cand")" = 200 ] && { url="$cand"; break; }
+      done
+      if [ -z "$url" ]; then
+        t="$(title_of "$2")"; [ -n "$t" ] || { echo "no communication $2 in the sheets" >&2; exit 1; }
+        url="$base/$(slug "$t")_Native%20PDF.pdf"
+      fi
+      echo "using $url"
+    fi
+    url="${url/assetdetails.html\//}" # a link copied from the AEM asset viewer
+    admin -p op attach-pdf -p id "$2" -p url "$url" ;;
+  sync) need "sync <id>" "${2:-}"; admin -p op sync -p id "$2" ;;
+  reconcile) admin -p op reconcile ;;
+  map) need "map <id>" "${2:-}"; admin -p op add-map -p id "$2" ;;
+  sidebar) need "sidebar <id>" "${2:-}"; admin -p op add-sidebar -p id "$2" ;;
+  sidebar-all)
+    # add the PDF details column to every record made on the site that lacks it
+    for id in $(bin/dealer list | awk '{print $2}' | grep '^DRAFT-'); do printf '%s: ' "$id"; admin -p op add-sidebar -p id "$id" | tr -d '\n ' | grep -o 'sidebar":"[a-z ]*\|error[^,}]*'; echo; done ;;
+  reset-map) need "reset-map <id>" "${2:-}"; admin -p op reset-map -p id "$2" ;;
+  setup-guides) admin -p op setup-guides ;;
+  delete) need "delete <id>" "${2:-}"; admin -p op delete -p id "$2" -p confirm yes ;;
+  generate) need "generate <id>" "${2:-}"; admin -p op generate -p id "$2" ;;
+  poll) admin -p op poll-pdfs ;;
+  seed)
+    # demo data: 15 communications in every state, created three at a time, then written to the sheets once
+    for from in 0 3 6 9 12; do admin -p op seed -p from "$from" -p to $((from + 3)) | grep -c '"id"' | sed 's/^/created: /'; done
+    admin -p op reconcile ;;
+  pdfs) admin -p op recent -p path /content/dam/dealer-communications -p mime application/pdf ;;
+  *) sed -n '2,19p' "$0" | sed 's/^# \{0,1\}//' ;;
+esac

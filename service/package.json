@@ -1,0 +1,14 @@
+{
+  "name": "dealer-communications-service",
+  "version": "0.1.0",
+  "private": true,
+  "description": "App Builder service behind the Dealer Communications site: drafts, review, AEM Guides PDFs, and the list sheets in Document Authoring.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "test": "for f in test/*.js; do node $f || exit 1; done"
+  },
+  "dependencies": {
+    "@adobe/aem-upload": "^2.0.5",
+    "@adobe/aio-lib-state": "^4"
+  }
+}
