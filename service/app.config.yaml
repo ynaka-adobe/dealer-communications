@@ -86,4 +86,11 @@ application:
               DA_TOKEN: $DA_TOKEN
             annotations:
               final: true
-
+          # Stores the AEM Author host and credential in app state (key config:aem). Invoke with
+          # `aio rt action invoke`; not reachable from the internet.
+          configure:
+            function: actions/configure/index.js
+            web: 'no'
+            runtime: nodejs:18
+            annotations:
+              final: true

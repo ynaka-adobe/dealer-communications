@@ -19,8 +19,10 @@ See `docs/platform-dependencies.md` (repo root) for what this service depends on
 2. Copy `.env.example` to `.env` and fill it in (never commit it): `DC_ACTION_SECRET`, `DC_REVIEW_CODE`,
    `DC_PDF_OUTPUT`, `DC_PDF_PARAMS`, `DC_PUBLISH_HOST`, `DA_CLIENT_ID`, `DA_CLIENT_SECRET`, `DA_SCOPES`,
    `DA_PUBLISH_KEY`, `DA_TOKEN`.
-3. AEM Author access: the actions read the host and credential from app state key `config:aem`. This project has no
-   action yet that writes it (the old project did). It must be added before the first deploy.
+3. AEM Author access: the actions read the host and credential from app state key `config:aem`. After the first
+   deploy, store it with the `configure` action and a local `aem-config.json` (git-ignored; see the comment at the
+   top of `actions/configure/index.js` for the fields):
+   `aio rt action invoke dealer-communications/configure -b -r -P aem-config.json`
 4. `npm install`, then `npm test`, then `aio app deploy`.
 5. Point the site's edge function entry (`api` in `src/sites.js`) at the deployed `communications` action and set
    the shared secret there.

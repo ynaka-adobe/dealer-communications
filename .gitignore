@@ -26,3 +26,5 @@ service/dist/
 *OAuth*Server-to-Server*.json
 service-credentials.json
 .aws.credentials.json
+service/aem-config.json
+aem-config.json
