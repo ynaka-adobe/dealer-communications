@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# check-site — checks from outside that the platform pieces the site depends on respond.
+# Usage: service/bin/check-site [host]   (default: dealer-communications.ynaka-adobe.com)
+HOST="${1:-dealer-communications.ynaka-adobe.com}"
+EDS="https://main--dealer-communications--ynaka-adobe.aem.live"
+code() { curl -s -o /dev/null -m 15 -w "%{http_code}" "$@"; }
+row() { printf "%-46s %s\n" "$1" "$2"; }
+row "EDS origin /"                      "$(code "$EDS/")  (want 200)"
+row "EDS origin /nav"                   "$(code "$EDS/nav")  (want 200)"
+row "EDS origin /data/notifications.json" "$(code "$EDS/data/notifications.json")  (want 200)"
+row "Custom domain /"                   "$(code "https://$HOST/")  (want 200; 000 = domain or certificate not ready)"
+row "Edge function: GET /auth/code"     "$(code "https://$HOST/auth/code")  (want 405 if the edge function is on, 404 if not)"
+row "Backend: GET /api/fmc/communications" "$(code "https://$HOST/api/fmc/communications?type=active")  (want 200 once the service is wired, else 404)"

@@ -11,6 +11,8 @@ shared secret), `reconcile`, `pdf-poll` (alarm triggers) and `admin` (operator o
 Copied from the earlier FMC demo service and renamed. Internal identifiers such as the `fmc*` metadata property
 names, the `x-fmc-*` headers and the `lib/fmc` folder are unchanged.
 
+See `docs/platform-dependencies.md` (repo root) for what this service depends on outside this repo.
+
 ## Set up (not done yet)
 1. Create an App Builder project and a workspace in the Developer Console, then `aio app use` it in this folder.
    Do not reuse another project.

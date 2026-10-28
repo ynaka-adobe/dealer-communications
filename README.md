@@ -6,6 +6,8 @@ A demo of an internal dealer-communications portal on AEM Edge Delivery Services
 - Analytics: Adobe Analytics with a live Insights panel, see `docs/analytics.md`.
 - Service contract: `docs/communications-api.md`.
 
+Outside-the-repo dependencies (CDN, edge function, domain, backend): see [docs/platform-dependencies.md](docs/platform-dependencies.md).
+
 Status: seeded from an earlier private demo. Site hostnames, DA content, the edge function entry and the backend service still need to be set up for this repo (`fstab.yaml` points at the DA content for `ynaka-adobe/dealer-communications`).
 
 ---
