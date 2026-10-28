@@ -172,7 +172,7 @@ async function createDraft(aem, payload, user, now = new Date(), ctx = {}) {
   })();
 
   try {
-    await aem.ensureFolder(ROOT, 'FMC Communications');
+    await aem.ensureFolder(ROOT, 'Dealer Communications');
     await aem.ensureFolder(folder, d.title);
     // the three files go up together; the map lets AEM Guides generate PDF/HTML from this
     // communication, and a failure there is reported (admin add-map repairs it), not fatal
