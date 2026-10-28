@@ -3,7 +3,7 @@ const { configure } = require('../actions/configure');
 
 const memStore = () => {
   const m = new Map();
-  return { get: async (k) => m.get(k), put: async (k, v) => { m.set(k, v); }, m };
+  return { get: async (k) => m.get(k), put: async (k, v) => { m.set(k, v); }, delete: async (k) => { m.delete(k); }, m };
 };
 
 (async () => {
@@ -21,6 +21,11 @@ const memStore = () => {
   const r2 = await configure({ clientId: 'id', clientSecret: 'secret' }, s);
   assert.deepEqual(r2.has, { token: false, s2s: true, jwt: true });
   assert.equal(r2.host, 'https://author.example.com');
-  assert.equal(s.m.get('config:aem').s2s.scope, 'openid,AdobeID,aem.folders,aem.assets.author');
+  const scope = s.m.get('config:aem').s2s.scope;
+  assert.ok(scope.includes('additional_info.projectedProductContext') && scope.includes('aem.assets.author'), 'default scope carries the product context');
+  // a changed credential drops the cached token
+  s.m.set('aem:s2sToken', { token: 'old' });
+  await configure({ clientId: 'id2', clientSecret: 's2' }, s);
+  assert.equal(s.m.has('aem:s2sToken'), false);
   console.log('configure: ok');
 })().catch((e) => { console.error(e); process.exit(1); });

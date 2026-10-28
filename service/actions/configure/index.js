@@ -14,6 +14,10 @@
 const { getStore } = require('../../lib/store');
 
 const KEY = 'config:aem';
+const TOKEN_CACHE_KEY = 'aem:s2sToken'; // the token cache lib/ims.js keeps
+// AEM maps the account to its product profile from additional_info.projectedProductContext, so a token
+// without it (or read_organizations) is refused with "missing required scopes"
+const DEFAULT_SCOPE = 'openid,AdobeID,read_organizations,additional_info.projectedProductContext,aem.folders,aem.assets.author';
 
 /** Merges the parameters into the stored AEM config. Exported for tests. */
 async function configure(params, store) {
@@ -31,7 +35,7 @@ async function configure(params, store) {
       ? {
         clientId: params.clientId,
         clientSecret: params.clientSecret,
-        scope: params.scope || 'openid,AdobeID,aem.folders,aem.assets.author',
+        scope: params.scope || DEFAULT_SCOPE,
         imsHost: params.imsHost || 'https://ims-na1.adobelogin.com',
       }
       : prev.s2s,
@@ -39,6 +43,7 @@ async function configure(params, store) {
   };
   if (!cfg.token && !cfg.s2s && !cfg.jwt) throw new Error('provide a credential: jwt, clientId and clientSecret, or aemToken');
   await store.put(KEY, cfg);
+  await store.delete(TOKEN_CACHE_KEY); // a token minted from the previous credential or scope must not be reused
   return {
     ok: true,
     host: cfg.host,
