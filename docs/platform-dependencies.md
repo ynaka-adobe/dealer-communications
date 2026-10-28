@@ -10,14 +10,18 @@ Run `service/bin/check-site` to test what can be tested from outside.
 | Content and list sheets | Document Authoring, `ynaka-adobe/dealer-communications` | pages, nav, footer, `/data/*` | in place |
 | Edge Delivery site | Cloud Manager, program 154856, "Edge Delivery Sites" | serving the site | registered |
 | Domain `dealer-communications.ynaka-adobe.com` | Cloud Manager (SSL Certificates, Domain Mappings) plus DNS | the custom domain | in place (answers 200 on 2026-10-28) |
-| CDN route to the edge function | `config-eds/cdn.yaml` in `ynaka-adobe/AEM-p154856`, deployed by config pipeline `60291285` | the edge function, for the API proxy and guest codes (decided: yes) | drafted in `AEM-p154856`, uncommitted; not deployed |
-| Edge function site entry | `edge-functions-xsc-demo/src/sites.js` in `ynaka-adobe/AEM-p154856`, deployed with `aio aem-edge-functions` | the `/api/fmc` proxy to the service (adds the shared secret) and guest codes at `/auth/code` (decided: yes) | drafted without the `api` block, uncommitted; the `api` block needs the deployed service |
+| CDN route to the edge function | `config-eds/cdn.yaml` in `ynaka-adobe/AEM-p154856`, deployed by config pipeline `60291285` | the edge function, for the API proxy and guest codes (decided: yes) | in place (AEM-p154856 PR #23, applied by the EDS config pipeline on 2026-10-28) |
+| Edge function site entry | `edge-functions-xsc-demo/src/sites.js` in `ynaka-adobe/AEM-p154856`, deployed with `aio aem-edge-functions` | the `/api/fmc` proxy to the service (adds the shared secret) and guest codes at `/auth/code` (decided: yes) | in place (PR #23; deployed as package 47 on 2026-10-28; edge secret `XSC_DEALER_COMMUNICATIONS_API_SECRET` equals the service's `DC_ACTION_SECRET`). The new package took a few minutes to reach the CDN. |
 | Backend service | App Builder project, code in `service/` of this repo | create, review, approve, PDFs | deployed to the Stage workspace of project `dealercommunications` (web action `…adobeioruntime.net/api/v1/web/dealer-communications/communications`); AEM credential stored with `configure`; PDF settings (`DC_PDF_*`) still empty |
 | AEM Author folder | `/content/dam/dealer-communications` on program 154856 | DITA records and PDFs | created by the service on the first draft |
 | AEM Guides PDF template | AEM Assets, a neutral copy of the Native PDF template | the PDF layout | not created |
 | AEM Author API allowlist | `config/api.yaml` in `ynaka-adobe/AEM-p154856`, applied by the **AEM Config** pipeline (Cloud Manager, config location `/config`, environments 1944904 and 1944736) | the service's calls to AEM Author (the client ID of the `dealercommunications` OAuth credential must be listed) | in place; a new credential needs its client ID added and the pipeline run again |
 | AEM product profile | Admin Console, Author profiles for program 154856 environment 1944736, attached to the credential's AEM Assets Author API | the service's access to Author | in place |
 | Analytics | report suite `acsmarketingdealernotification` (shared with the FMC demo) | page and event hits | configured in `scripts/analytics-config.js` |
+
+## Check (2026-10-28)
+`service/bin/check-site` shows: custom domain 200, `/auth/code` 405, `/api/fmc/communications?type=active` 200
+(an empty list until the first draft). `xsc-demo` and the FMC site were unaffected by the deploy.
 
 ## Order of work
 1. Certificate ready, domain mapping, DNS.
