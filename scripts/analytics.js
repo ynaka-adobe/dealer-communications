@@ -478,6 +478,28 @@ async function startTransport(config) {
 
 /* ───────────────────────────────── boot ────────────────────────────────── */
 
+/** Script errors that nothing caught, and promises that were rejected and never handled. */
+function observeErrors() {
+  let sent = 0;
+  const report = (type, message, source, line) => {
+    sent += 1;
+    if (sent > 10) return; // one broken page must not flood the report
+    track('js-error', {
+      error: {
+        type, message: String(message || '').slice(0, 120), source: String(source || '').split('/').pop().split('?')[0].slice(0, 60), line: Number(line) || 0,
+      },
+    });
+  };
+  window.addEventListener('error', (e) => {
+    if (e.target && e.target !== window) return; // a missing image or script, not a script error
+    report('script', e.message, e.filename, e.lineno);
+  });
+  window.addEventListener('unhandledrejection', (e) => {
+    const r = e.reason;
+    report('promise', r && r.message ? r.message : r, '', 0);
+  });
+}
+
 function startCollection() {
   if (started) return;
   started = true;
@@ -486,6 +508,7 @@ function startCollection() {
   observeClicks();
   observeScroll();
   observeForms();
+  observeErrors();
 }
 
 /**

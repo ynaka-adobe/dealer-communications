@@ -72,6 +72,9 @@ const EVENT_MAP = {
   'form-submit': { event: 'event5', label: 'Form Submit' },
   'scroll-depth': { event: 'event6', label: 'Scroll Depth' },
   'form-view': { event: '', label: 'Form View' },
+  'form-error': { event: '', label: 'Form Error' },
+  'api-error': { event: '', label: 'API Error' },
+  'js-error': { event: '', label: 'Script Error' },
 };
 
 function loadScript(src) {

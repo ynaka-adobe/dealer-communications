@@ -8,7 +8,7 @@ const { ROOT } = require('../lib/fmc/communications');
 
 const sheetOf = (rows) => ({ total: rows.length, limit: rows.length, offset: 0, data: rows, ':type': 'sheet' });
 const row = (o) => ({
-  id: '', fileName: '', title: '', status: 'DRAFT', reviewer: '-', author: '-', created: '2026-10-01T00:00:00', modified: '2026-10-01T00:00:00', locked: 'false', aemPath: '', pdf: '', note: '', ...o,
+  id: '', fileName: '', title: '', status: 'DRAFT', reviewer: '-', author: '-', created: '2026-10-01T00:00:00', modified: '2026-10-01T00:00:00', locked: 'false', aemPath: '', pdf: '', note: '', pdfTemplate: 'Dealer Communications', ...o,
 });
 
 function fakeDa(initial = {}) {
@@ -54,6 +54,9 @@ async function main() {
   assert.equal(worthSyncing(eventFor(ev('aem.assets.asset.metadata_updated', p1, { assetMetadata: { 'event:created': ['dc:title'] } }))), true);
 
   // --- row from metadata
+  assert.equal(rowFromMetadata('X', meta({ fmcPdfStyle: 'adobe' })).pdfTemplate, 'Adobe');
+  assert.equal(rowFromMetadata('X', meta({ fmcPdfStyle: 'dealer' })).pdfTemplate, 'Dealer Communications');
+  assert.equal(rowFromMetadata('X', meta({})).pdfTemplate, 'Dealer Communications', 'no style chosen means the default');
   assert.deepEqual(rowFromMetadata('X', meta({ fmcStatus: 'REVIEWER PENDING' })), row({
     id: 'X', fileName: 'X', title: 'T', status: 'REVIEWER PENDING', reviewer: 'rev', author: 'auth', created: '2026-10-25T10:00:00', modified: '2026-10-25T10:00:00', aemPath: topicPath('X'),
   }));

@@ -14,8 +14,8 @@
  */
 const NOTIFICATIONS = 'data/notifications.json';
 const ARCHIVE = 'data/archive.json';
-const COLUMNS = ['id', 'fileName', 'title', 'status', 'reviewer', 'author', 'created', 'modified', 'locked', 'aemPath', 'pdf', 'note'];
-const WIDTHS = [120, 120, 260, 220, 120, 120, 170, 170, 80, 260, 260, 300];
+const COLUMNS = ['id', 'fileName', 'title', 'status', 'reviewer', 'author', 'created', 'modified', 'locked', 'aemPath', 'pdf', 'note', 'pdfTemplate'];
+const WIDTHS = [120, 120, 260, 220, 120, 120, 170, 170, 80, 260, 260, 300, 170];
 
 // DA stores file names in lower case, so always address a draft document by its lower-case name
 const draftPath = (id) => `data/drafts/${String(id).toLowerCase()}.json`;

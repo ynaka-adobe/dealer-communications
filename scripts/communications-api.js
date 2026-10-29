@@ -18,6 +18,8 @@
  * Only paths on this origin are accepted as a base, so a crafted link cannot point the
  * page at another server.
  */
+import trackEvent from './analytics-events.js';
+
 
 const MOCK_DATA = '../blocks/communications/communications-data.js';
 const SHEETS = { active: 'notifications', archive: 'archive' };
@@ -67,14 +69,31 @@ function pollMs() {
   return (Number.isFinite(seconds) && seconds >= 5 && seconds <= 600 ? seconds : 30) * 1000;
 }
 
+/** What a failed call is reported as: the operation without ids or query strings, and the HTTP status (0 = no answer). */
+function reportFailure(operation, status) {
+  trackEvent('api-error', null, { error: { type: 'api', operation, status } });
+}
+
+const operationOf = (method, path) => `${method} ${String(path).split('?')[0].replace(/DRAFT-[A-Za-z0-9-]+/gi, ':id')}`;
+
 async function request(path, init = {}) {
-  const resp = await fetch(`${apiBase()}${path}`, {
-    credentials: 'same-origin',
-    cache: 'no-store',
-    ...init,
-    headers: { accept: 'application/json', ...(init.headers || {}) },
-  });
-  if (!resp.ok) throw new Error(`communications api ${resp.status} for ${path}`);
+  const operation = operationOf(init.method || 'GET', path);
+  let resp;
+  try {
+    resp = await fetch(`${apiBase()}${path}`, {
+      credentials: 'same-origin',
+      cache: 'no-store',
+      ...init,
+      headers: { accept: 'application/json', ...(init.headers || {}) },
+    });
+  } catch (e) {
+    reportFailure(operation, 0);
+    throw e;
+  }
+  if (!resp.ok) {
+    reportFailure(operation, resp.status);
+    throw new Error(`communications api ${resp.status} for ${path}`);
+  }
   return resp.status === 204 ? null : resp.json();
 }
 
@@ -102,15 +121,22 @@ export async function updateDraft(id, payload) {
  * Rejects with an Error whose message is the service's reason and whose `status` is the HTTP status.
  */
 export async function reviewCommunication(id, action, code) {
-  const resp = await fetch(`${apiBase()}/communications/${encodeURIComponent(id)}/review`, {
-    method: 'POST',
-    credentials: 'same-origin',
-    cache: 'no-store',
-    headers: { 'content-type': 'application/json', accept: 'application/json' },
-    body: JSON.stringify({ action, code }),
-  });
+  let resp;
+  try {
+    resp = await fetch(`${apiBase()}/communications/${encodeURIComponent(id)}/review`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      cache: 'no-store',
+      headers: { 'content-type': 'application/json', accept: 'application/json' },
+      body: JSON.stringify({ action, code }),
+    });
+  } catch (e) {
+    reportFailure(`review:${action}`, 0);
+    throw e;
+  }
   const body = await resp.json().catch(() => ({}));
   if (!resp.ok) {
+    reportFailure(`review:${action}`, resp.status);
     const e = new Error(body.error || `The request failed (${resp.status}).`);
     e.status = resp.status;
     e.caller = body.caller || '';

@@ -39,6 +39,9 @@ const XDM_EVENT_TYPES = {
   'form-view': 'web.webinteraction.impression',
   'form-start': 'web.formFilledOut',
   'form-submit': 'web.formFilledOut',
+  'form-error': 'web.webinteraction.other',
+  'api-error': 'web.webinteraction.other',
+  'js-error': 'web.webinteraction.other',
 };
 
 const LINK_TYPES = { internal: 'other', external: 'exit', download: 'download' };

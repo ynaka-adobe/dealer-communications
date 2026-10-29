@@ -11,6 +11,7 @@ const pad = (n) => String(n).padStart(2, '0');
 const ACTIVE_COLUMNS = [
   { key: 'title', label: 'Title', sort: true, filter: true },
   { key: 'status', label: 'Status', sort: true, filter: true, select: true },
+  { key: 'pdfTemplate', label: 'PDF Template', sort: true, filter: true, select: true },
   { key: 'reviewer', label: 'Reviewer', sort: true, filter: true, select: true },
   { key: 'author', label: 'Author', sort: true, filter: true, select: true },
   { key: 'created', label: 'Created Date', sort: true, date: true },
@@ -23,6 +24,7 @@ const ARCHIVE_COLUMNS = [
   },
   { key: 'title', label: 'Title', sort: true, filter: true },
   { key: 'status', label: 'Status', sort: true, filter: true, select: true },
+  { key: 'pdfTemplate', label: 'PDF Template', sort: true, filter: true, select: true },
   { key: 'reviewer', label: 'Reviewer', sort: true, filter: true, select: true },
   { key: 'author', label: 'Author', sort: true, filter: true, select: true },
   { key: 'created', label: 'Created Date', sort: true, date: true },

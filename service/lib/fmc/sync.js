@@ -44,6 +44,7 @@ function rowFromMetadata(id, meta, path = topicPath(id)) {
     aemPath: path,
     pdf: meta.fmcPdf || '',
     note: meta.fmcStatus === 'PDF ERROR' ? String(meta.fmcPdfError || '').slice(0, 200) : '',
+    pdfTemplate: meta.fmcPdfStyle === 'adobe' ? 'Adobe' : 'Dealer Communications',
   };
 }
 

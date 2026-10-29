@@ -44,7 +44,9 @@ const CATEGORIES = {
   'form-view': 'Form',
   'form-start': 'Form',
   'form-submit': 'Form',
-  'form-error': 'Form',
+  'form-error': 'Errors',
+  'api-error': 'Errors',
+  'js-error': 'Errors',
   'consent-update': 'Consent',
 };
 
@@ -81,6 +83,7 @@ function isEnabled() {
 /* ──────────────────────────── aggregation ──────────────────────────────── */
 
 function labelFor(entry) {
+  if (entry.error) return [entry.error.type, entry.error.status, entry.error.operation || entry.error.message].filter((x) => x !== undefined && x !== '').join(' ');
   if (entry.link?.text) return entry.link.text;
   if (entry.download?.fileName) return entry.download.fileName;
   if (entry.form?.name) return entry.form.name;
