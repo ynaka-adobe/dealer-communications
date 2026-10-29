@@ -91,7 +91,7 @@
   }
 }
 
-/* inside another page: just the widget */
+/* inside another page: just the widget, filling the frame it is shown in */
 body.quick-demo-embed header,
 body.quick-demo-embed footer,
 body.quick-demo-embed main h1,
@@ -99,6 +99,48 @@ body.quick-demo-embed main .default-content-wrapper > p {
   display: none;
 }
 
-body.quick-demo-embed main {
-  padding-top: 0;
+body.quick-demo-embed main > .section {
+  margin: 0;
+}
+
+body.quick-demo-embed main > .section > div {
+  max-width: none;
+  padding: 12px;
+}
+
+body.quick-demo-embed .quick-demo .quick-demo-view {
+  min-height: 360px;
+}
+
+body.quick-demo-embed .quick-demo .quick-demo-pdf {
+  height: 360px;
+}
+
+/* wide enough for two columns: both fill the height of the frame, the text box takes the spare room */
+@media (width >= 600px) {
+  body.quick-demo-embed .quick-demo {
+    grid-template-columns: 1fr 1fr;
+    height: calc(100vh - 24px);
+    align-items: stretch;
+  }
+
+  body.quick-demo-embed .quick-demo .quick-demo-form {
+    min-height: 0;
+  }
+
+  body.quick-demo-embed .quick-demo .quick-demo-text {
+    flex: 1;
+    min-height: 80px;
+    resize: none;
+  }
+
+  body.quick-demo-embed .quick-demo .quick-demo-view {
+    min-height: 0;
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+  body.quick-demo-embed .quick-demo .quick-demo-pdf {
+    height: 100%;
+  }
 }

@@ -69,6 +69,8 @@ let signalsTimer = 0;
 /* ───────────────────────────── enablement ──────────────────────────────── */
 
 function isEnabled() {
+  // a page framed by another site (?embed) is just the content: no panel, and nothing stored for the tab
+  if (new URLSearchParams(window.location.search).has('embed')) return false;
   const store = (fn) => { try { return fn(window.sessionStorage); } catch (e) { return null; } };
   const param = new URLSearchParams(window.location.search).get('insights');
   if (param === '0') {
