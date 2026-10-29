@@ -190,6 +190,14 @@ async function run(params, aem, sheets, now = new Date(), da = null) {
       return aem.generateOutput(topicPath(id).replace(/\.dita$/, '.ditamap'), params.output || 'pdf').catch((e) => ({ failed: e.message, body: e.body }));
     }
     case 'deploy-template': return deployTemplate(aem, { dryRun: params.dry === 'true' || params.dry === true });
+    case 'delete-template-file': return { name: params.name, deleted: await aem.deleteTemplateFile(String(params.name || '')).catch((e) => { throw new AdminError(e.message); }) };
+    case 'upload-template-logo': {
+      // the logo the Dealer template's header and footer point at: only img.svg, only in that folder
+      const svg = String(params.svg || '');
+      if (!/^\s*<svg[\s>]/.test(svg) || svg.length > 20000 || /<script|on[a-z]+\s*=|<foreignObject/i.test(svg)) throw new AdminError('not a plain svg logo');
+      await aem.uploadText('/content/dam/dita-templates/pdf/Dealer', 'img.svg', svg, 'image/svg+xml', { newVersion: true });
+      return { uploaded: 'img.svg', bytes: svg.length };
+    }
     case 'ls': {
       // read only: what a Guides template folder holds
       return { path: params.path, entries: await aem.listTemplates(String(params.path || '')) };

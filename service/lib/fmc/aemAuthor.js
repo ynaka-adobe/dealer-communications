@@ -42,6 +42,14 @@ function createAemClient({ host, token, sdk = DirectBinary, tmpdir = os.tmpdir()
       return res.status !== 404;
     },
 
+    /** Delete one named file from the Dealer template folder (only the leftovers of the copied Ford template). */
+    async deleteTemplateFile(name) {
+      if (!['Ford_logo_flat.svg', 'Dealer_Communication.plt'].includes(name)) throw new Error('not a removable template file');
+      const res = await fetch(`${origin}/api/assets/dita-templates/pdf/Dealer/${encodeURIComponent(name)}`, { method: 'DELETE', headers: auth });
+      if (!res.ok && res.status !== 404) throw fail(`delete template file ${name}`, res.status);
+      return res.status !== 404;
+    },
+
     /** Start a workflow on a repository path; resolves with the instance path to poll. */
     async startWorkflow(model, payload) {
       validateFolder(path.posix.dirname(payload));
@@ -164,7 +172,7 @@ function createAemClient({ host, token, sdk = DirectBinary, tmpdir = os.tmpdir()
     /** The children of a template folder, from the Assets API (read only). */
     async listTemplates(folderPath) {
       if (!/^\/content\/dam\/dita-templates(\/[A-Za-z0-9_. -]+)*$/.test(folderPath) || folderPath.includes('..')) throw new Error('not a template folder');
-      const res = await fetch(`${origin}/api/assets/${encodePath(relative(folderPath))}.json`, { headers: { ...auth, Accept: 'application/json' } });
+      const res = await fetch(`${origin}/api/assets/${encodePath(relative(folderPath))}.json?limit=500`, { headers: { ...auth, Accept: 'application/json' } });
       if (!res.ok) throw fail(`list ${folderPath}`, res.status);
       const body = await res.json();
       return (body.entities || []).map((e) => ({ name: (e.properties && e.properties.name) || '', class: (e.class || []).join(','), type: e.properties && (e.properties['dc:format'] || e.properties['jcr:primaryType']) }));
