@@ -58,6 +58,7 @@ function fromSheetRow(r) {
     locked: String(r.locked).toLowerCase() === 'true',
     aemPath: r.aemPath || '',
     note: r.note || '',
+    pdfTemplate: r.pdfTemplate || 'Dealer Communications', // a row saved before the choice existed used the default
     pdf: /^\/[\w./-]+\.pdf$/i.test(r.pdf || '') ? r.pdf : '', // a site path only
   };
 }

@@ -14,6 +14,7 @@ assert.ok(once.includes('FMCDealer sidebar layout'), 'the left details column la
 assert.equal(adobeCss(once), once);
 assert.equal(once.split(START).length, 2);
 assert.ok(once.includes(END));
+assert.match(once, /h1, h2, h3, h4, h5, h6[^{]*\{ color: #eb1000; \}/, 'every heading is Adobe red');
 
 // the page layout: wordmark, red title, a red rule under the header
 const plt = commonPlt();

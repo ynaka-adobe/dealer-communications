@@ -42,6 +42,13 @@ function createAemClient({ host, token, sdk = DirectBinary, tmpdir = os.tmpdir()
       return res.status !== 404;
     },
 
+    /** Name and describe the Adobe template folder (what Guides lists), so it does not read as a copy of Dealer. */
+    async titleAdobeTemplate(title, description) {
+      const body = new URLSearchParams({ 'jcr:title': title, title, description });
+      const res = await fetch(`${origin}/content/dam/dita-templates/pdf/Adobe/jcr:content`, { method: 'POST', headers: { ...auth, 'Content-Type': 'application/x-www-form-urlencoded' }, body });
+      if (!res.ok) throw fail('title the Adobe template folder', res.status);
+    },
+
     /** Delete one named file from the Dealer template folder (only the leftovers of the copied Ford template). */
     async deleteTemplateFile(name) {
       if (!['Ford_logo_flat.svg', 'Dealer_Communication.plt'].includes(name)) throw new Error('not a removable template file');

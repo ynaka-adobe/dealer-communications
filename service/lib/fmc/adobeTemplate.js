@@ -19,7 +19,8 @@ const END = '/* ===== end Adobe look ===== */';
 
 const ADOBE_CSS = `${START}
 body { color: ${INK}; }
-h1.chapter { color: ${INK}; border-left-color: ${RULE}; border-right-color: ${RULE}; }
+h1, h2, h3, h4, h5, h6, h1.chapter, .section > .title, .topictitle1 { color: ${RED}; }
+h1.chapter { border-left-color: ${RULE}; border-right-color: ${RULE}; }
 .section:not(.fmc-sidebar) { border-left-color: ${RULE}; border-right-color: ${RULE}; }
 .section.fmc-sidebar .fmc-label { color: ${RED}; }
 a, .xref { color: ${RED}; }
