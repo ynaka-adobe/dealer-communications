@@ -78,6 +78,29 @@ async function firstError(aem, job) {
   return `${job.outputStatus || 'errors'}; see the output log`;
 }
 
+/**
+ * Approve answers at once: the draft is marked GENERATING PDF now, and the slow part (waiting for
+ * Guides to recognize the map, asking it to generate) follows with `startJob(..., { resume: true })`.
+ * `previous` is the status it had, so a failure that happens before anything started can put it back.
+ */
+async function markGenerating(aem, sheets, id, now = new Date()) {
+  const meta = await aem.getMetadata(topicPath(id));
+  if (!meta) throw new JobError('no such communication', 404);
+  if (meta.fmcStatus === GENERATING) return { id, status: GENERATING, already: true };
+  const previous = meta.fmcStatus || 'DRAFT';
+  await aem.setMetadata(topicPath(id), {
+    fmcStatus: GENERATING, fmcModified: stamp(now), fmcPdfJob: '-', fmcPdfStarted: now.toISOString(), fmcPdfError: '-',
+  });
+  await syncSafely(aem, sheets, id, now);
+  return { id, status: GENERATING, previous };
+}
+
+/** Put a draft back to the status it had before Approve marked it (nothing was started). */
+async function unmark(aem, sheets, id, previous, now = new Date()) {
+  await aem.setMetadata(topicPath(id), { fmcStatus: previous, fmcModified: stamp(now), fmcPdfJob: '-' });
+  await syncSafely(aem, sheets, id, now);
+}
+
 /** The style presets setting (DC_PDF_STYLES) as an object: {"adobe": "<output name>"}; anything unusable is none. */
 function parseStyles(text) {
   try {
@@ -87,14 +110,14 @@ function parseStyles(text) {
 }
 
 async function startJob(aem, sheets, id, now = new Date(), {
-  wait = (ms) => new Promise((r) => setTimeout(r, ms)), output = OUTPUT, extra = {}, styles = {},
+  wait = (ms) => new Promise((r) => setTimeout(r, ms)), output = OUTPUT, extra = {}, styles = {}, resume = false,
 } = {}) {
   const meta = await aem.getMetadata(topicPath(id));
   if (!meta) throw new JobError('no such communication', 404);
   // a draft that chose a PDF style uses that style's preset; otherwise the default one
   const styled = styles && typeof styles[meta.fmcPdfStyle] === 'string' && styles[meta.fmcPdfStyle] ? styles[meta.fmcPdfStyle] : '';
   const chosen = styled || output;
-  if (meta.fmcStatus === GENERATING) return { id, status: GENERATING, already: true };
+  if (meta.fmcStatus === GENERATING && !resume) return { id, status: GENERATING, already: true };
   const mapPath = await ensureMap(aem, id, meta);
   if (!(await ensureRecognized(aem, mapPath, wait))) throw new JobError('Guides is still processing this map. Please try again in a moment.', 409);
   let started;
@@ -167,5 +190,5 @@ async function pollAll(aem, sheets, da, now = new Date()) {
 }
 
 module.exports = {
-  startJob, finishJob, pollAll, parseExtra, parseStyles, JobError, GENERATING, FAILED, OUTPUT,
+  startJob, markGenerating, unmark, giveUp, finishJob, pollAll, parseExtra, parseStyles, JobError, GENERATING, FAILED, OUTPUT,
 };

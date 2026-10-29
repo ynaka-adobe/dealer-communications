@@ -1,6 +1,6 @@
 const assert = require('assert');
 const {
-  handleReview, ReviewError, findPdfUrl, trustedCaller,
+  handleReview, runApproval, ReviewError, findPdfUrl, trustedCaller,
 } = require('../lib/fmc/review');
 const { ROOT } = require('../lib/fmc/communications');
 
@@ -82,6 +82,28 @@ const code = async (p) => { try { await p; return null; } catch (e) { return e i
   assert.equal(r.already, true);
   assert.equal(t.calls.started.length, 1);
 
+  // with a background action, Approve answers at once and starts nothing itself
+  t = setup(undefined, 'ok');
+  const queued = [];
+  r = await run({ id: ID, action: 'approve', code: 's3cret' }, t, { start: async (x) => { queued.push(x); } });
+  assert.equal(r.status, 'GENERATING PDF');
+  assert.deepEqual(queued, [ID]);
+  assert.equal(t.calls.started.length, 0, 'Guides is asked by the background action, not here');
+  assert.equal(t.calls.meta.at(-1).fmcStatus, 'GENERATING PDF');
+  // the background half then asks Guides, and a second click while it runs queues nothing
+  r = await runApproval({ id: ID }, { aem: t.aem, sheets: t.sheets, da: t.da });
+  assert.equal(r.status, 'GENERATING PDF');
+  assert.deepEqual(t.calls.started, [[`${ROOT}/${ID}/${ID}.ditamap`, 'pdf']]);
+  assert.equal(t.calls.meta.at(-1).fmcPdfJob, 'gen-1');
+  r = await run({ id: ID, action: 'approve', code: 's3cret' }, t, { start: async (x) => { queued.push(x); } });
+  assert.equal(r.already, true);
+  assert.equal(queued.length, 1);
+  // if the background action cannot be started, Approve does the work itself
+  t = setup(undefined, 'ok');
+  r = await run({ id: ID, action: 'approve', code: 's3cret' }, t, { start: async () => { throw new Error('no runtime credentials'); } });
+  assert.equal(r.status, 'GENERATING PDF');
+  assert.equal(t.calls.started.length, 1);
+
   // cannot start workflows and no PDF exists: a clear message that carries the HTTP status
   t = setup();
   assert.equal(await code(run({ id: ID, action: 'approve', code: 's3cret' }, t, { fetchImpl: web([], t.calls) })), 403);
@@ -91,7 +113,7 @@ const code = async (p) => { try { await p; return null; } catch (e) { return e i
   r = await run({ id: ID, action: 'approve', code: 's3cret' }, t, { fetchImpl: web([`${ID}-ditamap.pdf`], t.calls) });
   assert.equal(r.status, 'PUBLISHED');
   assert.equal(r.pdf, `/pdfs/${ID.toLowerCase()}.pdf`);
-  assert.equal(t.calls.changes[0].active.upsert[0].pdf, r.pdf);
+  assert.equal(t.calls.changes.at(-1).active.upsert[0].pdf, r.pdf);
 
   // approve: the map named with _Native PDF is found too
   t = setup();
@@ -109,7 +131,8 @@ const code = async (p) => { try { await p; return null; } catch (e) { return e i
   t = setup();
   const e409 = await code(run({ id: ID, action: 'approve', code: 's3cret' }, t, { fetchImpl: web([], t.calls) }));
   assert.equal(e409, 403);
-  assert.equal(t.calls.meta.length + t.calls.put.length + t.calls.changes.length, 0);
+  assert.equal(t.calls.put.length, 0);
+  assert.equal(t.calls.meta.at(-1).fmcStatus, 'FINAL APPROVAL PENDING', 'the status it had is put back');
 
   // the probe only goes to the configured AEM publish host
   t = setup();

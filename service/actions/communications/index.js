@@ -23,6 +23,7 @@ const {
 } = require('../../lib/fmc/runtime');
 const { handleReview, ReviewError, trustedCaller } = require('../../lib/fmc/review');
 const { parseStyles } = require('../../lib/fmc/pdfjob');
+const { invokeAsync } = require('../../lib/fmc/invoke');
 const { loadForEdit, loadForCopy, updateCommunication } = require('../../lib/fmc/edit');
 const { HttpError } = require('../../lib/fmc/communications');
 const { allowAnonymousCreate } = require('../../lib/fmc/limits');
@@ -76,6 +77,8 @@ async function main(params) {
         output: real(params.DC_PDF_OUTPUT) ? params.DC_PDF_OUTPUT : undefined,
         outputParams: real(params.DC_PDF_PARAMS) ? params.DC_PDF_PARAMS : undefined,
         styles: real(params.DC_PDF_STYLES) ? parseStyles(params.DC_PDF_STYLES) : undefined,
+        // Approve answers at once; the background action does the slow part
+        start: (draftId) => invokeAsync('dealer-communications/pdf-start', { id: draftId }),
       });
       return respond(200, { id, status: result.status, ...(result.pdf ? { pdf: result.pdf } : {}) });
     } catch (err) {

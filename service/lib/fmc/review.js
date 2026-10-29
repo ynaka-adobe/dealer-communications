@@ -21,7 +21,9 @@ const {
   setStatus, attachPdf, setArchived, AdminError,
 } = require('./admin');
 const { topicPath } = require('./sync');
-const { startJob, parseExtra, JobError } = require('./pdfjob');
+const {
+  startJob, markGenerating, unmark, giveUp, parseExtra, JobError,
+} = require('./pdfjob');
 
 const STATUS_FOR = { reviewer: 'REVIEWER PENDING', final: 'FINAL APPROVAL PENDING', reopen: 'DRAFT' };
 const DEFAULT_HOST = 'publish-p154856-e1944736.adobeaemcloud.com';
@@ -61,11 +63,53 @@ async function findPdfUrl(aem, id, host, fetchImpl) {
 }
 
 /**
+ * The slow half of Approve: ask Guides for the PDF (the poller finishes it). If the service account
+ * may not start workflows, a PDF that already exists is used instead.
+ */
+async function runApproval({ id }, {
+  aem, sheets, da, host = DEFAULT_HOST, fetchImpl = fetch, output, outputParams, styles,
+}, now = new Date()) {
+  try {
+    return await startJob(aem, sheets, id, now, {
+      output, extra: parseExtra(outputParams), styles, resume: true,
+    });
+  } catch (e) {
+    if (!(e instanceof JobError) || e.status === 404) throw e;
+    const url = await findPdfUrl(aem, id, host, fetchImpl);
+    if (!url) throw new ReviewError(e.status, `${e.message}. Generate the PDF in AEM Guides, then approve again.`);
+    return attachPdf(aem, sheets, da, { id, url }, now, fetchImpl);
+  }
+}
+
+/**
+ * Approve answers at once: the draft is marked GENERATING PDF, then `start` (when given) runs the
+ * slow half in the background. Without `start`, or if it cannot be started, it is done right here.
+ */
+async function approve({ id }, deps, now) {
+  const marked = await markGenerating(deps.aem, deps.sheets, id, now);
+  if (marked.already) return marked;
+  if (deps.start) {
+    try {
+      await deps.start(id);
+      return { id, status: marked.status };
+    } catch (e) {
+      console.warn('approve: could not start the background action, doing it here:', e && e.message); // eslint-disable-line no-console
+    }
+  }
+  try {
+    return await runApproval({ id }, deps, now);
+  } catch (e) {
+    await unmark(deps.aem, deps.sheets, id, marked.previous, now).catch(() => {});
+    throw e;
+  }
+}
+
+/**
  * @param {{id:string, action:string, code:string}} req
  * @param {{aem:object, sheets:object, da:object, secret:string, host?:string, fetchImpl?:Function}} deps
  */
 async function handleReview({ id, action, code }, {
-  aem, sheets, da, secret, host = DEFAULT_HOST, fetchImpl = fetch, employee = false, output, outputParams, styles,
+  aem, sheets, da, secret, host = DEFAULT_HOST, fetchImpl = fetch, employee = false, output, outputParams, styles, start,
 }, now = new Date()) {
   // Open to anonymous visitors by default. If a demo code is configured (DC_REVIEW_CODE), anyone
   // who is not signed in must give it; signing in always works.
@@ -73,16 +117,9 @@ async function handleReview({ id, action, code }, {
   if (!sheets || !da) throw new ReviewError(503, 'sheet storage is not configured');
   try {
     if (action === 'approve') {
-      try {
-        // generate a fresh PDF from the map; the poller hosts it and approves when it is done
-        return await startJob(aem, sheets, id, now, { output, extra: parseExtra(outputParams), styles });
-      } catch (e) {
-        if (!(e instanceof JobError) || e.status === 404) throw e;
-        // the service account may not be allowed to start workflows: use a PDF that already exists
-        const url = await findPdfUrl(aem, id, host, fetchImpl);
-        if (!url) throw new ReviewError(e.status, `${e.message}. Generate the PDF in AEM Guides, then approve again.`);
-        return attachPdf(aem, sheets, da, { id, url }, now, fetchImpl);
-      }
+      return await approve({ id }, {
+        aem, sheets, da, host, fetchImpl, output, outputParams, styles, start,
+      }, now);
     }
     if (action === 'archive') return await setArchived(aem, sheets, { id, archived: true }, now);
     if (action === 'restore') return await setArchived(aem, sheets, { id, archived: false }, now);
@@ -96,5 +133,5 @@ async function handleReview({ id, action, code }, {
 }
 
 module.exports = {
-  handleReview, ReviewError, findPdfUrl, trustedCaller, STATUS_FOR,
+  handleReview, runApproval, ReviewError, findPdfUrl, trustedCaller, STATUS_FOR,
 };
