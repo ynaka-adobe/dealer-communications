@@ -1,7 +1,7 @@
 .quick-demo {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
   align-items: start;
 }
 
@@ -9,6 +9,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
 }
 
 .quick-demo .quick-demo-label {
@@ -17,7 +18,6 @@
 
 .quick-demo .quick-demo-text,
 .quick-demo .quick-demo-style {
-  width: 100%;
   box-sizing: border-box;
   padding: 10px 12px;
   font: inherit;
@@ -27,7 +27,8 @@
 }
 
 .quick-demo .quick-demo-text {
-  min-height: 180px;
+  width: 100%;
+  min-height: 160px;
   resize: vertical;
 }
 
@@ -38,9 +39,16 @@
   color: #6e6e6e;
 }
 
+/* style choice and button on one line */
+.quick-demo .quick-demo-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
 .quick-demo .quick-demo-button {
-  align-self: flex-start;
-  margin-top: 8px;
+  margin-left: auto;
   padding: 10px 22px;
   font: inherit;
   font-weight: 600;
@@ -58,17 +66,58 @@
 
 .quick-demo .quick-demo-status {
   min-height: 1.5em;
-  margin: 4px 0 0;
+  margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .quick-demo .quick-demo-status[data-kind='ok'] { color: #2d7d46; }
 .quick-demo .quick-demo-status[data-kind='error'] { color: #d31510; }
 
+/* the viewer: tabs along the top, one panel below */
 .quick-demo .quick-demo-view {
-  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 360px;
   border: 1px solid #d5d5d5;
   border-radius: 6px;
   background: #f5f5f5;
+  overflow: hidden;
+}
+
+.quick-demo .quick-demo-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 6px 6px 0;
+  border-bottom: 1px solid #d5d5d5;
+  background: #ebebeb;
+}
+
+.quick-demo .quick-demo-tab {
+  padding: 8px 18px;
+  font: inherit;
+  font-weight: 600;
+  color: #4b4b4b;
+  background: transparent;
+  border: 0;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+}
+
+.quick-demo .quick-demo-tab[aria-selected='true'] {
+  color: #0a1a5c;
+  background: #f5f5f5;
+  box-shadow: inset 0 3px 0 #0a1a5c;
+}
+
+.quick-demo .quick-demo-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.quick-demo .quick-demo-panel[hidden] {
+  display: none;
 }
 
 .quick-demo .quick-demo-empty {
@@ -77,17 +126,17 @@
   color: #6e6e6e;
 }
 
-.quick-demo .quick-demo-pdf {
-  display: block;
+.quick-demo .quick-demo-frame {
+  flex: 1;
   width: 100%;
-  height: 560px;
+  min-height: 320px;
   border: 0;
-  border-radius: 6px;
+  background: #fff;
 }
 
 @media (width >= 900px) {
   .quick-demo {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 }
 
@@ -105,42 +154,35 @@ body.quick-demo-embed main > .section {
 
 body.quick-demo-embed main > .section > div {
   max-width: none;
-  padding: 12px;
+  padding: 10px 12px;
 }
 
-body.quick-demo-embed .quick-demo .quick-demo-view {
-  min-height: 360px;
-}
-
-body.quick-demo-embed .quick-demo .quick-demo-pdf {
-  height: 360px;
-}
-
-/* wide enough for two columns: both fill the height of the frame, the text box takes the spare room */
+/* wide enough for two columns: both fill the frame; the text box takes the spare room, the status stays in view */
 @media (width >= 600px) {
   body.quick-demo-embed .quick-demo {
-    grid-template-columns: 1fr 1fr;
-    height: calc(100vh - 24px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    height: calc(100vh - 20px);
     align-items: stretch;
   }
 
   body.quick-demo-embed .quick-demo .quick-demo-form {
     min-height: 0;
+    overflow-y: auto;
   }
 
   body.quick-demo-embed .quick-demo .quick-demo-text {
-    flex: 1;
-    min-height: 80px;
+    flex: 1 1 0;
+    min-height: 72px;
     resize: none;
   }
 
   body.quick-demo-embed .quick-demo .quick-demo-view {
     min-height: 0;
     height: 100%;
-    box-sizing: border-box;
   }
 
-  body.quick-demo-embed .quick-demo .quick-demo-pdf {
-    height: 100%;
+  body.quick-demo-embed .quick-demo .quick-demo-frame {
+    min-height: 0;
   }
 }

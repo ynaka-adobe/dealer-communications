@@ -1,4 +1,7 @@
-import { createDraft, getStatus, reviewCommunication } from '../../scripts/communications-api.js';
+import {
+  createDraft, getStatus, reviewCommunication, getCommunicationDetail,
+} from '../../scripts/communications-api.js';
+import { buildHtml } from '../../scripts/communication-export.js';
 import trackEvent from '../../scripts/analytics-events.js';
 
 const MAX = 600; // the summary section is limited to 600 characters
@@ -53,6 +56,50 @@ async function pdfReady(id) {
   throw new Error('The PDF was made but is not available yet. Try again in a moment.');
 }
 
+/** The viewer: PDF and HTML tabs over one panel each. */
+function buildViewer() {
+  const view = el('div', 'quick-demo-view');
+  const tabs = el('div', 'quick-demo-tabs');
+  tabs.setAttribute('role', 'tablist');
+  const panels = {};
+  const buttons = {};
+  const show = (name) => {
+    Object.entries(panels).forEach(([k, p]) => { p.hidden = k !== name; });
+    Object.entries(buttons).forEach(([k, b]) => b.setAttribute('aria-selected', String(k === name)));
+  };
+  [['pdf', 'PDF', 'Your PDF will appear here when it is ready.'], ['html', 'HTML', 'The HTML version will appear here.']].forEach(([name, label, hint]) => {
+    const b = el('button', 'quick-demo-tab', label);
+    b.type = 'button';
+    b.setAttribute('role', 'tab');
+    b.id = `quick-demo-tab-${name}`;
+    b.addEventListener('click', () => show(name));
+    buttons[name] = b;
+    tabs.append(b);
+    const p = el('div', 'quick-demo-panel');
+    p.setAttribute('role', 'tabpanel');
+    p.setAttribute('aria-labelledby', b.id);
+    p.append(el('p', 'quick-demo-empty', hint));
+    panels[name] = p;
+  });
+  view.append(tabs, panels.pdf, panels.html);
+  show('pdf');
+  return {
+    view,
+    show,
+    reset() {
+      Object.entries(panels).forEach(([k, p]) => {
+        p.textContent = '';
+        p.append(el('p', 'quick-demo-empty', k === 'pdf' ? 'Your PDF will appear here when it is ready.' : 'The HTML version will appear here.'));
+      });
+      show('pdf');
+    },
+    fill(name, frame) {
+      panels[name].textContent = '';
+      panels[name].append(frame);
+    },
+  };
+}
+
 export default function decorate(block) {
   // inside another page (an iframe): no site header or footer
   if (new URLSearchParams(window.location.search).has('embed')) document.body.classList.add('quick-demo-embed');
@@ -64,26 +111,27 @@ export default function decorate(block) {
   const text = el('textarea', 'quick-demo-text');
   text.id = 'quick-demo-text';
   text.maxLength = MAX;
-  text.rows = 9;
   text.placeholder = 'For example: Service bulletin. All dealers should complete the new inspection by Friday.';
   const count = el('p', 'quick-demo-count', `0 / ${MAX}`);
+
+  const row = el('div', 'quick-demo-row');
   const styleLabel = el('label', 'quick-demo-label', 'PDF style');
   styleLabel.htmlFor = 'quick-demo-style';
   const style = el('select', 'quick-demo-style');
   style.id = 'quick-demo-style';
-  [['dealer', 'Dealer Communications'], ['adobe', 'Adobe']].forEach(([v, t]) => style.append(new Option(t, v)));
+  [['adobe', 'Adobe'], ['dealer', 'Dealer Communications']].forEach(([v, t]) => style.append(new Option(t, v)));
+  style.value = 'adobe';
   const button = el('button', 'quick-demo-button', 'Generate PDF');
   button.type = 'button';
   button.disabled = true;
+  row.append(styleLabel, style, button);
+
   const status = el('p', 'quick-demo-status');
   status.setAttribute('role', 'status');
-  form.append(label, text, count, styleLabel, style, button, status);
+  form.append(label, text, count, row, status);
 
-  const view = el('div', 'quick-demo-view');
-  const empty = el('p', 'quick-demo-empty', 'Your PDF will appear here when it is ready.');
-  view.append(empty);
-
-  block.append(form, view);
+  const viewer = buildViewer();
+  block.append(form, viewer.view);
 
   text.addEventListener('input', () => {
     count.textContent = `${text.value.length} / ${MAX}`;
@@ -92,16 +140,28 @@ export default function decorate(block) {
 
   const say = (message, kind = '') => { status.textContent = message; status.dataset.kind = kind; };
 
+  /** The HTML version is available as soon as the draft exists, long before the PDF. */
+  async function showHtml(id) {
+    const detail = await getCommunicationDetail(id).catch(() => null);
+    if (!detail) return false;
+    const frame = el('iframe', 'quick-demo-frame');
+    frame.setAttribute('sandbox', ''); // the content is not trusted
+    frame.title = 'HTML version';
+    frame.srcdoc = buildHtml(detail);
+    viewer.fill('html', frame);
+    return true;
+  }
+
   button.addEventListener('click', async () => {
     button.disabled = true;
     text.disabled = true;
     style.disabled = true;
-    view.textContent = '';
-    view.append(empty);
+    viewer.reset();
     trackEvent('form-start', block, { form: { name: 'quick-demo' } });
     try {
       say('Saving your communication…');
       const created = await createDraft(payloadFor(text.value, style.value));
+      if (await showHtml(created.id)) viewer.show('html'); // something to read while the PDF is made
       say('Asking AEM Guides to generate the PDF…');
       await reviewCommunication(created.id, 'approve', '');
       const started = Date.now();
@@ -117,11 +177,11 @@ export default function decorate(block) {
         say(`Generating the PDF… (${Math.round((Date.now() - started) / 1000)}s)`);
       }
       const url = await pdfReady(created.id);
-      const frame = el('iframe', 'quick-demo-pdf');
+      const frame = el('iframe', 'quick-demo-frame');
       frame.src = url;
       frame.title = 'Generated PDF';
-      view.textContent = '';
-      view.append(frame);
+      viewer.fill('pdf', frame);
+      viewer.show('pdf');
       say('Your PDF is ready.', 'ok');
       trackEvent('form-submit', block, { form: { name: 'quick-demo' } });
     } catch (e) {
