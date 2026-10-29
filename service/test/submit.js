@@ -3,7 +3,7 @@ const { createDraft, ROOT } = require('../lib/fmc/communications');
 
 const body = () => ({
   title: 'Parallel submit', division: 'FCSD', channel: 'Service', reviewer: 'mshanm26', originator: 'x', fieldPublish: '2026-10-30T13:36',
-  dealerComm: 'Yes', dealerGroup: 'All Ford & Lincoln Dealers', fieldOnly: '<p>f</p>', action: '<p>a</p>', summary: '<p>s</p>', questions: '<p>q</p>',
+  dealerComm: 'Yes', dealerGroup: 'All Summit & Crestline Dealers', fieldOnly: '<p>f</p>', action: '<p>a</p>', summary: '<p>s</p>', questions: '<p>q</p>',
 });
 
 function setup({ failMeta = false, failSheet = false, failSheetAlways = false } = {}) {

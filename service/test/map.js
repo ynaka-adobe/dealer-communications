@@ -23,7 +23,7 @@ function fakeAem({ failMap = false } = {}) {
 const draft = (over = {}) => ({
   title: 'Sales Op & <support>', division: 'FCSD', channel: 'Collision', reviewer: 'mshanm26', alternate: 'ndolloff',
   concurring: 'vck', originator: 'x', businessContact: 'sgorle1', fieldPublish: '2026-10-22T09:00',
-  dealerComm: 'Yes', fieldGroup: 'All Ford Field Personnel', fieldLead: ['General Manager'], dealerGroup: 'All Ford & Lincoln Dealers',
+  dealerComm: 'Yes', fieldGroup: 'All Summit Field Personnel', fieldLead: ['General Manager'], dealerGroup: 'All Summit & Crestline Dealers',
   dealerRoles: ['Dealer Principals'], primaryDept: 'Service', fieldOnly: '<p>Field only</p>',
   action: '<p>Do this</p>', summary: '<p>Short summary</p>', questions: '<ul><li>One</li></ul>', ...over,
 });

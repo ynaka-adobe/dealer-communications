@@ -1,12 +1,12 @@
 /*
- * The FMCDealer layout for the Ford Native PDF template: a block of CSS added to the template's
+ * The FMCDealer layout for the Dealer Native PDF template: a block of CSS added to the template's
  * content.css that puts the details in a left column, the message in a right column with a rule
  * between them (the site's preview, on paper), and drops the "Chapter 1" label.
  *
  * The block sits between two marker comments, so running the deploy again replaces it instead of
  * stacking copies. The file is uploaded as a new version, so the previous one can be restored in AEM.
  */
-const TEMPLATE_CSS = '/content/dam/dita-templates/pdf/Ford/content.css';
+const TEMPLATE_CSS = '/content/dam/dita-templates/pdf/Dealer/content.css';
 const START = '/* ===== FMCDealer sidebar layout (managed by the service) ===== */';
 const END = '/* ===== end FMCDealer sidebar layout ===== */';
 
@@ -83,7 +83,7 @@ function withLayout(css) {
  * would only push the logo down into the content, because the header is a fixed-height strip.)
  * Safe to run again.
  */
-const COMMON_PLT = '/content/dam/dita-templates/pdf/Ford/Common.plt';
+const COMMON_PLT = '/content/dam/dita-templates/pdf/Dealer/Common.plt';
 const TOP_MARGIN = 'margin-top: 64pt;';
 const HEADER_EDITS = [
   ['border-collapse: collapse; border-bottom: 2px solid #0a1a5c;"', 'border-collapse: collapse; border-bottom: 0;"'],

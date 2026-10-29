@@ -6,7 +6,7 @@ const ID = 'DRAFT-20261025174557-2xhy';
 const topic = `${ROOT}/${ID}/${ID}.dita`;
 const payload = (over = {}) => ({
   title: 'Edited title', division: 'FCSD', channel: 'Service', reviewer: 'mshanm26', originator: 'x', fieldPublish: '2026-11-02T09:00',
-  dealerComm: 'Yes', dealerGroup: 'All Ford & Lincoln Dealers', fieldOnly: '<p>f</p>', action: '<p>a</p>', summary: '<p>s</p>', questions: '<p>q</p>', fieldDue: '', ...over,
+  dealerComm: 'Yes', dealerGroup: 'All Summit & Crestline Dealers', fieldOnly: '<p>f</p>', action: '<p>a</p>', summary: '<p>s</p>', questions: '<p>q</p>', fieldDue: '', ...over,
 });
 
 function setup({ status = 'DRAFT', saved = null, meta = {} } = {}) {

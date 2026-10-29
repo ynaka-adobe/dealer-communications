@@ -3,7 +3,7 @@ const {
   withLayout, withHeaderSpacing, deployTemplate, START, END, TEMPLATE_CSS, COMMON_PLT,
 } = require('../lib/fmc/template');
 
-const base = 'body { color: red; }\n/* ===== FMCDealer Ford branding (appended) ===== */\nh1 { font-size: 20pt; }\n';
+const base = 'body { color: red; }\n/* ===== FMCDealer Dealer branding (appended) ===== */\nh1 { font-size: 20pt; }\n';
 
 (async () => {
   // adds the block once, keeps everything that was there
@@ -41,8 +41,8 @@ const base = 'body { color: red; }\n/* ===== FMCDealer Ford branding (appended) 
   const first = await deployTemplate(aem);
   assert.equal(first.changed, true);
   assert.deepEqual(writes, [
-    ['/content/dam/dita-templates/pdf/Ford', 'content.css', 'text/css', true],
-    ['/content/dam/dita-templates/pdf/Ford', 'Common.plt', 'text/html', true],
+    ['/content/dam/dita-templates/pdf/Dealer', 'content.css', 'text/css', true],
+    ['/content/dam/dita-templates/pdf/Dealer', 'Common.plt', 'text/html', true],
   ]);
   writes.length = 0;
   assert.equal((await deployTemplate(aem)).changed, false);
