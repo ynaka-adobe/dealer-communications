@@ -27,6 +27,9 @@ application:
               # output names of the other PDF styles, as JSON: {"adobe":"<preset output name>"}
               DC_PDF_STYLES: $DC_PDF_STYLES
               DC_PUBLISH_HOST: $DC_PUBLISH_HOST
+              # caps on anonymous drafts: per person per hour, and across everyone per day (unset: 5 and 100)
+              DC_CLIENT_PER_HOUR: $DC_CLIENT_PER_HOUR
+              DC_PER_DAY: $DC_PER_DAY
               # DA write + publish for the communications sheets (optional: without them, saving
               # draft steps answers 503 and the site keeps the draft in the page)
               DA_CLIENT_ID: $DA_CLIENT_ID

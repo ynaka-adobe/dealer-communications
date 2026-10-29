@@ -3,7 +3,7 @@ import {
   ROUTING,
 } from './create-draft-data.js';
 import {
-  createDraft, saveDraftStep, loadDraftForEdit, loadDraftForCopy, updateDraft,
+  createDraft, saveDraftStep, loadDraftForEdit, loadDraftForCopy, updateDraft, RATE_LIMIT_MESSAGE,
 } from '../../scripts/communications-api.js';
 import { sanitizeHtml, richText } from './rich-text.js';
 import trackEvent from '../../scripts/analytics-events.js';
@@ -570,10 +570,10 @@ export default async function decorate(block) {
         const home = el('a', 'cd-btn cd-btn-blue', 'Back to Communications');
         home.href = '/';
         done.append(home);
-      }).catch(() => {
+      }).catch((e) => {
         trackEvent('form-error', block, formDetail());
         done.textContent = '';
-        done.append(el('h2', '', 'Draft not saved'), el('p', '', 'The draft could not be saved. Your entries are kept; try again.'));
+        done.append(el('h2', '', 'Draft not saved'), el('p', '', e && e.status === 429 ? RATE_LIMIT_MESSAGE : 'The draft could not be saved. Your entries are kept; try again.'));
         const retry = el('button', 'cd-btn cd-btn-blue', 'Back to review');
         retry.type = 'button';
         retry.addEventListener('click', () => go(5));

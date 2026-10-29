@@ -70,6 +70,9 @@ function pollMs() {
   return (Number.isFinite(seconds) && seconds >= 5 && seconds <= 600 ? seconds : 30) * 1000;
 }
 
+/** What a person is told when the demo's rate limit stops them. */
+export const RATE_LIMIT_MESSAGE = 'Rate limit reached. Please try again in a little while.';
+
 /** What a failed call is reported as: the operation without ids or query strings, and the HTTP status (0 = no answer). */
 function reportFailure(operation, status) {
   trackEvent('api-error', null, { error: { type: 'api', operation, status } });
@@ -93,7 +96,9 @@ async function request(path, init = {}) {
   }
   if (!resp.ok) {
     reportFailure(operation, resp.status);
-    throw new Error(`communications api ${resp.status} for ${path}`);
+    const e = new Error(resp.status === 429 ? RATE_LIMIT_MESSAGE : `communications api ${resp.status} for ${path}`);
+    e.status = resp.status;
+    throw e;
   }
   return resp.status === 204 ? null : resp.json();
 }
@@ -138,7 +143,7 @@ export async function reviewCommunication(id, action, code) {
   const body = await resp.json().catch(() => ({}));
   if (!resp.ok) {
     reportFailure(`review:${action}`, resp.status);
-    const e = new Error(body.error || `The request failed (${resp.status}).`);
+    const e = new Error(resp.status === 429 ? RATE_LIMIT_MESSAGE : (body.error || `The request failed (${resp.status}).`));
     e.status = resp.status;
     e.caller = body.caller || '';
     throw e;
