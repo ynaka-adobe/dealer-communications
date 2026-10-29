@@ -24,6 +24,8 @@ const ARCHIVE = ['ARCHIVED', 'APPROVED', 'UNPUBLISH'];
 const NAME = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/;
 // how the PDF looks: `dealer` is the default; others need a preset in DC_PDF_STYLES
 const PDF_STYLES = ['dealer', 'adobe'];
+/** What the lists show for a PDF style. */
+const pdfTemplateLabel = (style) => (style === 'adobe' ? 'Adobe' : 'Dealer Communications');
 const DRAFT_ID = /^DRAFT-\d{14}-[a-z0-9]{4}$/;
 const MAX_DRAFT_BYTES = 256 * 1024;
 
@@ -214,7 +216,7 @@ async function saveDraftProgress(sheets, id, payload, user, client, now = new Da
   const author = str(user, 64) || str(payload.originator, 64);
   await sheets.putDraft(id, { id, owner, saved: now.toISOString(), state: payload });
   const sheet = await sheets.upsertActive({
-    id, fileName: id, title: title || 'Untitled draft', status: 'DRAFT', reviewer: str(payload.reviewer, 64), author,
+    id, fileName: id, title: title || 'Untitled draft', status: 'DRAFT', reviewer: str(payload.reviewer, 64), author, pdfTemplate: pdfTemplateLabel(payload.pdfStyle),
   }, now);
   return { id, saved: true, sheet };
 }
@@ -235,6 +237,7 @@ function toRow(hit) {
     modified: dateOf(m, 'fmcModified') || dateOf(m, 'fmcCreated'),
     locked: false,
     pdf: m.fmcPdf || '',
+    pdfTemplate: pdfTemplateLabel(m.fmcPdfStyle),
   };
 }
 
@@ -301,5 +304,5 @@ async function handle({
 }
 
 module.exports = {
-  mapName, topicPath, handle, validateDraft, createDraft, saveDraftProgress, listCommunications, getDetail, getStatus, ownerOf, ROOT, ACTIVE, ARCHIVE, HttpError,
+  pdfTemplateLabel, mapName, topicPath, handle, validateDraft, createDraft, saveDraftProgress, listCommunications, getDetail, getStatus, ownerOf, ROOT, ACTIVE, ARCHIVE, HttpError,
 };

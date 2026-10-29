@@ -26,7 +26,7 @@ const sheetOf = (rows) => ({
 
 const cell = (v) => (v == null ? '' : String(v));
 const toRow = (r) => Object.fromEntries(COLUMNS.map((c) => [c, cell(r[c])]));
-const same = (a, b) => ['title', 'status', 'reviewer', 'author', 'aemPath', 'locked', 'pdf', 'note', 'modified'].every((k) => cell(a[k]) === cell(b[k]));
+const same = (a, b) => ['title', 'status', 'reviewer', 'author', 'aemPath', 'locked', 'pdf', 'note', 'pdfTemplate', 'modified'].every((k) => cell(a[k]) === cell(b[k]));
 
 const SHEET_PATHS = { active: NOTIFICATIONS, archive: ARCHIVE };
 

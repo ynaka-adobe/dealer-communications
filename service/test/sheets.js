@@ -158,6 +158,15 @@ async function main() {
     assert.equal(c.headers['x-content-source-authorization'], 'Bearer da-tok');
   });
 
+  // the PDF template shown on the lists counts as a change, so rows written before it existed catch up
+  {
+    const store = createSheetStore(fakeDa());
+    const row = { id: ID, fileName: ID, title: 'T', status: 'DRAFT', reviewer: 'r', author: 'a' };
+    assert.equal(await store.upsertActive(row, new Date('2026-10-25T10:00:00Z')), 'created');
+    assert.equal(await store.upsertActive({ ...row, pdfTemplate: 'Adobe' }, new Date('2026-10-25T10:01:00Z')), 'updated');
+    assert.equal(await store.upsertActive({ ...row, pdfTemplate: 'Adobe' }, new Date('2026-10-25T10:02:00Z')), 'unchanged');
+  }
+
   console.log('fmc-sheets: ok');
 }
 

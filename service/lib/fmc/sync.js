@@ -12,7 +12,9 @@
  * with no aemPath (the sample rows, and drafts saved step by step but not yet submitted) are not
  * AEM-backed, so neither the event handler nor the reconcile ever removes them.
  */
-const { ROOT, ACTIVE, ARCHIVE } = require('./communications');
+const {
+  ROOT, ACTIVE, ARCHIVE, pdfTemplateLabel,
+} = require('./communications');
 
 const TOPIC = new RegExp(`^${ROOT.replace(/\//g, '\\/')}\\/([A-Za-z0-9][A-Za-z0-9_-]{0,63})\\/\\1\\.dita$`);
 const MAX_REMOVALS = 25;
@@ -44,7 +46,7 @@ function rowFromMetadata(id, meta, path = topicPath(id)) {
     aemPath: path,
     pdf: meta.fmcPdf || '',
     note: meta.fmcStatus === 'PDF ERROR' ? String(meta.fmcPdfError || '').slice(0, 200) : '',
-    pdfTemplate: meta.fmcPdfStyle === 'adobe' ? 'Adobe' : 'Dealer Communications',
+    pdfTemplate: pdfTemplateLabel(meta.fmcPdfStyle),
   };
 }
 
