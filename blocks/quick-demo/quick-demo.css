@@ -32,6 +32,37 @@
   resize: vertical;
 }
 
+/* the box and its "Tab to use this example" hint */
+.quick-demo .quick-demo-area {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.quick-demo .quick-demo-hint {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #6e6e6e;
+  pointer-events: none;
+}
+
+.quick-demo .quick-demo-hint[hidden] {
+  display: none;
+}
+
+.quick-demo .quick-demo-hint kbd {
+  padding: 1px 6px;
+  font: inherit;
+  font-weight: 600;
+  border: 1px solid #b3b3b3;
+  border-radius: 4px;
+  background: #f5f5f5;
+}
+
 .quick-demo .quick-demo-count {
   margin: 0;
   font-size: 0.8125rem;
@@ -171,9 +202,14 @@ body.quick-demo-embed main > .section > div {
     overflow-y: auto;
   }
 
-  body.quick-demo-embed .quick-demo .quick-demo-text {
+  body.quick-demo-embed .quick-demo .quick-demo-area {
     flex: 1 1 0;
     min-height: 72px;
+  }
+
+  body.quick-demo-embed .quick-demo .quick-demo-text {
+    flex: 1 1 0;
+    min-height: 0;
     resize: none;
   }
 

@@ -5,6 +5,7 @@ import { buildHtml } from '../../scripts/communication-export.js';
 import trackEvent from '../../scripts/analytics-events.js';
 
 const MAX = 600; // the summary section is limited to 600 characters
+const SAMPLE = 'Service bulletin: all dealers should complete the new inspection by Friday.';
 const POLL_MS = 3000;
 const GIVE_UP_MS = 4 * 60 * 1000;
 
@@ -111,7 +112,12 @@ export default function decorate(block) {
   const text = el('textarea', 'quick-demo-text');
   text.id = 'quick-demo-text';
   text.maxLength = MAX;
-  text.placeholder = 'For example: Service bulletin. All dealers should complete the new inspection by Friday.';
+  text.placeholder = SAMPLE;
+  // the example is offered, not forced: Tab fills it in (selected, so typing replaces it)
+  const hint = el('p', 'quick-demo-hint');
+  hint.append(el('kbd', '', 'Tab'), ' to use this example');
+  const area = el('div', 'quick-demo-area');
+  area.append(text, hint);
   const count = el('p', 'quick-demo-count', `0 / ${MAX}`);
 
   const row = el('div', 'quick-demo-row');
@@ -128,14 +134,23 @@ export default function decorate(block) {
 
   const status = el('p', 'quick-demo-status');
   status.setAttribute('role', 'status');
-  form.append(label, text, count, row, status);
+  form.append(label, area, count, row, status);
 
   const viewer = buildViewer();
   block.append(form, viewer.view);
 
-  text.addEventListener('input', () => {
+  const sync = () => {
     count.textContent = `${text.value.length} / ${MAX}`;
     button.disabled = !text.value.trim();
+    hint.hidden = text.value !== '';
+  };
+  text.addEventListener('input', sync);
+  text.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab' || e.shiftKey || text.value !== '') return;
+    e.preventDefault();
+    text.value = SAMPLE;
+    text.setSelectionRange(0, SAMPLE.length); // typing now replaces the example
+    sync();
   });
 
   const say = (message, kind = '') => { status.textContent = message; status.dataset.kind = kind; };
