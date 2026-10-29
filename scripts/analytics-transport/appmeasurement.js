@@ -118,7 +118,7 @@ function timestampParam() {
  */
 export function toAnalyticsVars(entry) {
   const {
-    event, page = {}, component, link, download, scroll, form,
+    event, page = {}, component, link, download, scroll, form, error,
   } = entry;
   const mapped = EVENT_MAP[event] || { event: '', label: event };
 
@@ -154,7 +154,12 @@ export function toAnalyticsVars(entry) {
   if (event === 'download-click') linkType = 'd';
   else if (link?.type === 'external') linkType = 'e';
 
-  const detail = link?.text || download?.fileName || form?.name
+  // an error names what failed, so the Custom Links report reads "API Error | POST review:approve 500"
+  // (operations carry no ids and script messages are cut short, so this never holds personal data)
+  const errorDetail = error
+    ? [error.operation || error.message, error.status === undefined ? '' : error.status].filter((x) => x !== '').join(' ')
+    : '';
+  const detail = errorDetail || link?.text || download?.fileName || form?.name
     || (scroll ? `${scroll.depth}%` : component?.id);
 
   return {
