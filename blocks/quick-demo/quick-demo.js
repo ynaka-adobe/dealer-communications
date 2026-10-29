@@ -32,7 +32,7 @@ function payloadFor(text, pdfStyle) {
   const lines = text.split(/\n+/).map((l) => l.trim()).filter(Boolean);
   const first = lines[0] || 'Demo communication';
   return {
-    title: `Demo: ${first.slice(0, 60)}`,
+    title: first.length > 100 ? `${first.slice(0, 99)}\u2026` : first,
     dealerComm: 'Yes',
     fieldPublish: nowLocal(),
     dealerGroup: 'All Dealers',

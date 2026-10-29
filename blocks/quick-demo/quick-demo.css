@@ -183,9 +183,13 @@ body.quick-demo-embed main > .section {
   margin: 0;
 }
 
+body.quick-demo-embed {
+  overflow: hidden; /* the frame never scrolls as a whole; the panels inside it do */
+}
+
 body.quick-demo-embed main > .section > div {
   max-width: none;
-  padding: 10px 12px;
+  padding: 8px 12px;
 }
 
 /* wide enough for two columns: both fill the frame; the text box takes the spare room, the status stays in view */
@@ -193,7 +197,7 @@ body.quick-demo-embed main > .section > div {
   body.quick-demo-embed .quick-demo {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr);
-    height: calc(100vh - 20px);
+    height: calc(100vh - 16px);
     align-items: stretch;
   }
 
@@ -205,6 +209,7 @@ body.quick-demo-embed main > .section > div {
   body.quick-demo-embed .quick-demo .quick-demo-area {
     flex: 1 1 0;
     min-height: 72px;
+    max-height: 240px; /* a short message does not need a tall box; the status stays close to the button */
   }
 
   body.quick-demo-embed .quick-demo .quick-demo-text {
