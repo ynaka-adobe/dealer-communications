@@ -22,6 +22,7 @@ const {
   aemClient, sheetStore, daClient, real,
 } = require('../../lib/fmc/runtime');
 const { handleReview, ReviewError, trustedCaller } = require('../../lib/fmc/review');
+const { parseStyles } = require('../../lib/fmc/pdfjob');
 const { loadForEdit, loadForCopy, updateCommunication } = require('../../lib/fmc/edit');
 const { HttpError } = require('../../lib/fmc/communications');
 const { allowAnonymousCreate } = require('../../lib/fmc/limits');
@@ -74,6 +75,7 @@ async function main(params) {
         employee,
         output: real(params.DC_PDF_OUTPUT) ? params.DC_PDF_OUTPUT : undefined,
         outputParams: real(params.DC_PDF_PARAMS) ? params.DC_PDF_PARAMS : undefined,
+        styles: real(params.DC_PDF_STYLES) ? parseStyles(params.DC_PDF_STYLES) : undefined,
       });
       return respond(200, { id, status: result.status, ...(result.pdf ? { pdf: result.pdf } : {}) });
     } catch (err) {

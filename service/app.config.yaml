@@ -24,6 +24,8 @@ application:
               DC_PDF_OUTPUT: $DC_PDF_OUTPUT
               # extra parameters the Native PDF preset needs, e.g. nodejs=true&templatePath=/content/dam/...
               DC_PDF_PARAMS: $DC_PDF_PARAMS
+              # output names of the other PDF styles, as JSON: {"adobe":"<preset output name>"}
+              DC_PDF_STYLES: $DC_PDF_STYLES
               DC_PUBLISH_HOST: $DC_PUBLISH_HOST
               # DA write + publish for the communications sheets (optional: without them, saving
               # draft steps answers 503 and the site keeps the draft in the page)
@@ -79,6 +81,8 @@ application:
               DC_PDF_OUTPUT: $DC_PDF_OUTPUT
               # extra parameters the Native PDF preset needs, e.g. nodejs=true&templatePath=/content/dam/...
               DC_PDF_PARAMS: $DC_PDF_PARAMS
+              # output names of the other PDF styles, as JSON: {"adobe":"<preset output name>"}
+              DC_PDF_STYLES: $DC_PDF_STYLES
               DA_CLIENT_ID: $DA_CLIENT_ID
               DA_CLIENT_SECRET: $DA_CLIENT_SECRET
               DA_SCOPES: $DA_SCOPES

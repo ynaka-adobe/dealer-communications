@@ -10,10 +10,11 @@ const { buildMap } = require('./dita');
 const { setupGuides } = require('./guides');
 const { hostAndApprove, PdfError } = require('./pdfhost');
 const {
-  startJob, finishJob, pollAll, parseExtra, JobError,
+  startJob, finishJob, pollAll, parseExtra, parseStyles, JobError,
 } = require('./pdfjob');
 const { seedBatch } = require('./seed');
 const { deployTemplate } = require('./template');
+const { createAdobeTemplate, plainSvg } = require('./adobeTemplate');
 const { sidebarSections } = require('./dita');
 const { stateFromMetadata } = require('./edit');
 const {
@@ -160,7 +161,7 @@ async function run(params, aem, sheets, now = new Date(), da = null) {
     case 'reconcile':
       if (!sheets) throw new AdminError('sheet storage is not configured');
       return reconcile(aem, sheets, now);
-    case 'generate': return startJob(aem, sheets, params.id, now, { output: params.output || params.DC_PDF_OUTPUT, extra: parseExtra(params.extra || params.DC_PDF_PARAMS) }).catch((e) => { if (e instanceof JobError) throw new AdminError(e.message); throw e; });
+    case 'generate': return startJob(aem, sheets, params.id, now, { output: params.output || params.DC_PDF_OUTPUT, extra: parseExtra(params.extra || params.DC_PDF_PARAMS), styles: params.output ? undefined : parseStyles(params.DC_PDF_STYLES) }).catch((e) => { if (e instanceof JobError) throw new AdminError(e.message); throw e; });
     case 'finish': return finishJob(aem, sheets, da, params.id, now);
     case 'job-log': {
       // the Guides log of a communication's latest generation that reported errors (read only)
@@ -191,6 +192,11 @@ async function run(params, aem, sheets, now = new Date(), da = null) {
     }
     case 'deploy-template': return deployTemplate(aem, { dryRun: params.dry === 'true' || params.dry === true });
     case 'delete-template-file': return { name: params.name, deleted: await aem.deleteTemplateFile(String(params.name || '')).catch((e) => { throw new AdminError(e.message); }) };
+    case 'title-adobe-template': await aem.titleAdobeTemplate('Adobe', 'Adobe look for Dealer Communications PDFs'); return { titled: 'Adobe' };
+    case 'create-adobe-template': {
+      if (!plainSvg(params.svg)) throw new AdminError('not a plain svg logo');
+      return createAdobeTemplate(aem, String(params.svg));
+    }
     case 'upload-template-logo': {
       // the logo the Dealer template's header and footer point at: only img.svg, only in that folder
       const svg = String(params.svg || '');

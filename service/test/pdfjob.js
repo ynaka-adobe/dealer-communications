@@ -1,6 +1,6 @@
 const assert = require('assert');
 const {
-  startJob, finishJob, pollAll, parseExtra,
+  startJob, finishJob, pollAll, parseExtra, parseStyles,
 } = require('../lib/fmc/pdfjob');
 const { ROOT } = require('../lib/fmc/communications');
 
@@ -53,6 +53,19 @@ const job = (over = {}) => ({
   const named = setup({ meta: { 'dc:title': 'T', fmcStatus: 'FINAL APPROVAL PENDING' } });
   await startJob(named.aem, named.sheets, ID, T0, { output: 'c0c81768-native' });
   assert.deepEqual(named.calls.generated, [[map, 'c0c81768-native']]);
+
+  // a draft that chose a style uses that style's preset; one that did not keeps the default
+  const adobe = setup({ meta: { 'dc:title': 'T', fmcStatus: 'FINAL APPROVAL PENDING', fmcPdfStyle: 'adobe' } });
+  await startJob(adobe.aem, adobe.sheets, ID, T0, { output: 'dealer-preset', styles: parseStyles('{"adobe":"adobe-preset"}') });
+  assert.deepEqual(adobe.calls.generated, [[map, 'adobe-preset']]);
+  const plain = setup({ meta: { 'dc:title': 'T', fmcStatus: 'FINAL APPROVAL PENDING', fmcPdfStyle: 'dealer' } });
+  await startJob(plain.aem, plain.sheets, ID, T0, { output: 'dealer-preset', styles: parseStyles('{"adobe":"adobe-preset"}') });
+  assert.deepEqual(plain.calls.generated, [[map, 'dealer-preset']]);
+  const unset = setup({ meta: { 'dc:title': 'T', fmcStatus: 'FINAL APPROVAL PENDING', fmcPdfStyle: 'adobe' } });
+  await startJob(unset.aem, unset.sheets, ID, T0, { output: 'dealer-preset', styles: {} });
+  assert.deepEqual(unset.calls.generated, [[map, 'dealer-preset']], 'a style with no preset configured falls back to the default');
+  assert.deepEqual(parseStyles('not json'), {});
+  assert.deepEqual(parseStyles('["x"]'), {});
 
   // extra Generate parameters (Native PDF needs nodejs and a template path) are passed through
   const withExtra = setup({ meta: { 'dc:title': 'T', fmcStatus: 'FINAL APPROVAL PENDING' } });

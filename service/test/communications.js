@@ -38,6 +38,9 @@ async function main() {
   assert.match(hostile.dita, /<xref href="https:\/\/ford\.com\/\?a=1&amp;b=2"/);
 
   // --- topic structure: audience sections, escaped title, metadata
+  assert.equal(validateDraft(draft(), 'sgorle1', new Date()).metadata.fmcPdfStyle, 'dealer', 'the default PDF style');
+  assert.equal(validateDraft(draft({ pdfStyle: 'adobe' }), 'sgorle1', new Date()).metadata.fmcPdfStyle, 'adobe');
+  assert.equal(validateDraft(draft({ pdfStyle: 'bogus' }), 'sgorle1', new Date()).metadata.fmcPdfStyle, 'dealer', 'an unknown style is ignored');
   const d = validateDraft(draft({ title: 'T & <x>' }), 'sgorle1', new Date('2026-10-22T14:00:00Z'));
   const { dita, preview } = buildDocuments(d);
   assert.match(dita, /<title>T &amp; &lt;x&gt;<\/title>/);

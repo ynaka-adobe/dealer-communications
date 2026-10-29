@@ -65,7 +65,7 @@ async function findPdfUrl(aem, id, host, fetchImpl) {
  * @param {{aem:object, sheets:object, da:object, secret:string, host?:string, fetchImpl?:Function}} deps
  */
 async function handleReview({ id, action, code }, {
-  aem, sheets, da, secret, host = DEFAULT_HOST, fetchImpl = fetch, employee = false, output, outputParams,
+  aem, sheets, da, secret, host = DEFAULT_HOST, fetchImpl = fetch, employee = false, output, outputParams, styles,
 }, now = new Date()) {
   // Open to anonymous visitors by default. If a demo code is configured (DC_REVIEW_CODE), anyone
   // who is not signed in must give it; signing in always works.
@@ -75,7 +75,7 @@ async function handleReview({ id, action, code }, {
     if (action === 'approve') {
       try {
         // generate a fresh PDF from the map; the poller hosts it and approves when it is done
-        return await startJob(aem, sheets, id, now, { output, extra: parseExtra(outputParams) });
+        return await startJob(aem, sheets, id, now, { output, extra: parseExtra(outputParams), styles });
       } catch (e) {
         if (!(e instanceof JobError) || e.status === 404) throw e;
         // the service account may not be allowed to start workflows: use a PDF that already exists

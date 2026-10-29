@@ -22,6 +22,8 @@ const ACTIVE = ['DRAFT', 'REVIEWER PENDING', 'FINAL APPROVAL PENDING', 'GENERATI
 // so a finished communication is never filed away automatically.
 const ARCHIVE = ['ARCHIVED', 'APPROVED', 'UNPUBLISH'];
 const NAME = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/;
+// how the PDF looks: `dealer` is the default; others need a preset in DC_PDF_STYLES
+const PDF_STYLES = ['dealer', 'adobe'];
 const DRAFT_ID = /^DRAFT-\d{14}-[a-z0-9]{4}$/;
 const MAX_DRAFT_BYTES = 256 * 1024;
 
@@ -65,6 +67,7 @@ function validateDraft(payload, user, now = new Date(), fileName = '') {
     dealerRoles: list(payload.dealerRoles),
     primaryDept: str(payload.primaryDept),
     additionalDepts: list(payload.additionalDepts),
+    pdfStyle: PDF_STYLES.includes(payload.pdfStyle) ? payload.pdfStyle : 'dealer',
     fieldOnly: html(payload.fieldOnly),
     action: html(payload.action),
     summary: html(payload.summary),
@@ -122,6 +125,7 @@ function validateDraft(payload, user, now = new Date(), fileName = '') {
     fmcDealerRoles: join(d.dealerRoles),
     fmcPrimaryDept: d.primaryDept,
     fmcAdditionalDepts: join(d.additionalDepts),
+    fmcPdfStyle: d.pdfStyle,
   };
   return d;
 }

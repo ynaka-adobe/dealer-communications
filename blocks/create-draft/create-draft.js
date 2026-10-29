@@ -79,6 +79,17 @@ function selectField(state, key, label, options, { required, placeholder, onChan
   return wrap(label, required, sel);
 }
 
+/** How the PDF looks: a choice of styles, each backed by its own Guides preset. */
+function pdfStyleField(state) {
+  const sel = el('select', 'cd-input');
+  sel.id = nextId();
+  [['dealer', 'Dealer Communications'], ['adobe', 'Adobe']].forEach(([value, text]) => sel.append(new Option(text, value)));
+  sel.value = state.pdfStyle === 'adobe' ? 'adobe' : 'dealer';
+  state.pdfStyle = sel.value;
+  sel.addEventListener('change', () => { state.pdfStyle = sel.value; });
+  return wrap('PDF Style', false, sel);
+}
+
 function dateField(state, key, label, { required, time, note } = {}) {
   const row = el('div', 'cd-date');
   const input = el('input', 'cd-input');
@@ -150,6 +161,7 @@ function step2(state, rerender) {
     dateField(state, 'fieldPublish', 'Field Publish Date', { required: true, time: true }),
     dateField(state, 'fieldDue', 'Field Due Date', { note: 'Date by which the field must complete the action' }),
     dateField(state, 'dealerDue', 'Dealer Action Due Date'),
+    pdfStyleField(state),
   );
   box.append(el('hr', 'cd-rule'));
   const radio = el('div', 'cd-field');

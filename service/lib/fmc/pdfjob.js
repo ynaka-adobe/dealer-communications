@@ -78,21 +78,34 @@ async function firstError(aem, job) {
   return `${job.outputStatus || 'errors'}; see the output log`;
 }
 
-async function startJob(aem, sheets, id, now = new Date(), { wait = (ms) => new Promise((r) => setTimeout(r, ms)), output = OUTPUT, extra = {} } = {}) {
+/** The style presets setting (DC_PDF_STYLES) as an object: {"adobe": "<output name>"}; anything unusable is none. */
+function parseStyles(text) {
+  try {
+    const o = typeof text === 'string' ? JSON.parse(text) : text;
+    return o && typeof o === 'object' && !Array.isArray(o) ? o : {};
+  } catch (e) { return {}; }
+}
+
+async function startJob(aem, sheets, id, now = new Date(), {
+  wait = (ms) => new Promise((r) => setTimeout(r, ms)), output = OUTPUT, extra = {}, styles = {},
+} = {}) {
   const meta = await aem.getMetadata(topicPath(id));
   if (!meta) throw new JobError('no such communication', 404);
+  // a draft that chose a PDF style uses that style's preset; otherwise the default one
+  const styled = styles && typeof styles[meta.fmcPdfStyle] === 'string' && styles[meta.fmcPdfStyle] ? styles[meta.fmcPdfStyle] : '';
+  const chosen = styled || output;
   if (meta.fmcStatus === GENERATING) return { id, status: GENERATING, already: true };
   const mapPath = await ensureMap(aem, id, meta);
   if (!(await ensureRecognized(aem, mapPath, wait))) throw new JobError('Guides is still processing this map. Please try again in a moment.', 409);
   let started;
   try {
     try {
-      started = await aem.generateOutput(mapPath, output || OUTPUT, extra);
+      started = await aem.generateOutput(mapPath, chosen || OUTPUT, extra);
     } catch (first) {
       // a map created moments ago may still be processing in Guides: wait briefly and ask once more
       if (first.status === 401 || first.status === 403) throw first;
       await wait(8000);
-      started = await aem.generateOutput(mapPath, output || OUTPUT, extra);
+      started = await aem.generateOutput(mapPath, chosen || OUTPUT, extra);
     }
   } catch (e) {
     const err = new JobError(`could not start the PDF generation: ${e.message}`, e.status === 401 || e.status === 403 ? 403 : 502);
@@ -154,5 +167,5 @@ async function pollAll(aem, sheets, da, now = new Date()) {
 }
 
 module.exports = {
-  startJob, finishJob, pollAll, parseExtra, JobError, GENERATING, FAILED, OUTPUT,
+  startJob, finishJob, pollAll, parseExtra, parseStyles, JobError, GENERATING, FAILED, OUTPUT,
 };

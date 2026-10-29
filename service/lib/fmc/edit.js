@@ -43,6 +43,7 @@ function stateFromMetadata(id, m) {
     dealerRoles: split(m.fmcDealerRoles),
     primaryDept: m.fmcPrimaryDept || '',
     additionalDepts: split(m.fmcAdditionalDepts),
+    pdfStyle: m.fmcPdfStyle || 'dealer',
   };
 }
 
